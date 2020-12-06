@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import simulator.NumberField?>
+
+<FlowPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox>
+         <children>
+            <GridPane fx:id="mainGridPane">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="177.0" minWidth="10.0" prefWidth="150.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Map width:" />
+                  <Label text="Map height:" GridPane.rowIndex="1" />
+                  <Label text="Animal start energy:" GridPane.rowIndex="2" />
+                  <Label text="Animal move energy:" GridPane.rowIndex="3" />
+                  <Label text="Plant energy:" GridPane.rowIndex="4" />
+                  <Label text="Jungle height:" GridPane.rowIndex="6" />
+                  <NumberField fx:id="mapWidthNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" />
+                  <NumberField fx:id="mapHeightNumberField" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="69.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <NumberField fx:id="startEnergyNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <NumberField fx:id="moveEnergyNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <NumberField fx:id="plantEnergyNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <NumberField fx:id="jungleHeightNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Label text="Animals on day 0:" GridPane.rowIndex="7" />
+                  <Label text="Plants spawned per day:" GridPane.rowIndex="8" />
+                  <Label text="Energy needed for mating:" GridPane.rowIndex="9" />
+                  <NumberField fx:id="startAnimalsNumberNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <NumberField fx:id="plantsPerDayNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                  <NumberField fx:id="minEnergyForReproductionNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                  <Label text="Jungle width:" GridPane.rowIndex="5" />
+                  <NumberField fx:id="jungleWidthNumberField" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               </children>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+            </GridPane>
+            <FlowPane alignment="CENTER" prefWidth="200.0" prefWrapLength="600.0">
+               <children>
+                  <Button fx:id="okButton" mnemonicParsing="false" onAction="#onOkButtonClicked" text="OK" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" top="20.0" />
+               </VBox.margin>
+            </FlowPane>
+            
+         </children>
+      </VBox>
+   </children>
+</FlowPane>

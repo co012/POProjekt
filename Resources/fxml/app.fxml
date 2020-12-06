@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="490.0" prefWidth="790.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.AppController">
+   <top>
+       <MenuBar BorderPane.alignment="CENTER">
+           <Menu mnemonicParsing="false" text="Load">
+               <MenuItem mnemonicParsing="false" onAction="#onLoadFromFileClicked" text="Load from file" />
+               <MenuItem mnemonicParsing="false" onAction="#onLoadDirectlyClicked" text="Load directly" />
+               <MenuItem mnemonicParsing="false" text="Surprise me" />
+           </Menu>
+           <Menu mnemonicParsing="false" text="Options">
+               <CheckMenuItem fx:id="runTwoMapsCheckbox" mnemonicParsing="false" text="Make two maps" />
+           </Menu>
+           <Menu mnemonicParsing="false" text="Help">
+               <MenuItem disable="true" mnemonicParsing="false" text="There is no help" />
+           </Menu>
+       </MenuBar>
+   </top>
+   <bottom>
+       <GridPane BorderPane.alignment="CENTER">
+           <columnConstraints>
+               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+           </columnConstraints>
+           <rowConstraints>
+               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+           </rowConstraints>
+           <padding>
+               <Insets left="10.0" />
+           </padding>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1">
+               <Label text="Map width: " />
+               <Label fx:id="mapWidthLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2">
+               <Label text="Map height: " />
+               <Label fx:id="mapHeightLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="3">
+               <Label text="Animal start energy: " />
+               <Label fx:id="animalStartEnergyLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.rowIndex="2">
+               <Label text="Animals on day : " />
+               <Label fx:id="startAnimalsNumberLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <Label text="Plants spawned per day: " />
+               <Label fx:id="plantsPerDayLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <Label text="Energy needed for mating: " />
+               <Label fx:id="minEnergyForReproductionLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="1">
+               <Label text="Plant energy: " />
+               <Label fx:id="energyFromPlantLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.rowIndex="1">
+               <Label text="Animal move energy: " />
+               <Label fx:id="animalMoveEnergyLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <Label text="Jungle width: " />
+               <Label fx:id="jungleWidthLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <Label text="Jungle height: " />
+               <Label fx:id="jungleHeightLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <Button fx:id="startButton" disable="true" mnemonicParsing="false" text="Start" />
+           </HBox>
+       </GridPane>
+   </bottom>
+   <center>
+      <SplitPane fx:id="contentSplitPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
