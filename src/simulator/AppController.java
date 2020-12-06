@@ -1,10 +1,8 @@
 package simulator;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.*;
 
 
@@ -12,20 +10,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class AppController {
-    public CheckMenuItem runTwoMapsCheckbox;
-    public Label mapWidthLabel;
-    public Label mapHeightLabel;
-    public Label animalStartEnergyLabel;
-    public Label animalMoveEnergyLabel;
-    public Label energyFromPlantLabel;
-    public Label jungleWidthLabel;
-    public Label jungleHeightLabel;
-    public Label startAnimalsNumberLabel;
-    public Label plantsPerDayLabel;
-    public Label minEnergyForReproductionLabel;
-    public Button startButton;
+    @FXML private CheckMenuItem runTwoMapsCheckbox;
+    @FXML private Label mapWidthLabel;
+    @FXML private Label mapHeightLabel;
+    @FXML private Label animalStartEnergyLabel;
+    @FXML private Label animalMoveEnergyLabel;
+    @FXML private Label energyFromPlantLabel;
+    @FXML private Label jungleWidthLabel;
+    @FXML private Label jungleHeightLabel;
+    @FXML private Label startAnimalsNumberLabel;
+    @FXML private Label plantsPerDayLabel;
+    @FXML private Label minEnergyForReproductionLabel;
+    @FXML private Button startButton;
+    @FXML private SplitPane contentSplitPane;
 
     private Stage stage;
+    private SimulationsManager simulationsManager;
+    private SimulationProperties simulationProperties;
 
 
 
@@ -87,6 +88,7 @@ public class AppController {
             return;
         }
 
+        simulationProperties = properties;
         startButton.setDisable(false);
     }
 
@@ -94,7 +96,24 @@ public class AppController {
     private void onStartButtonClicked(){
         if(startButton.isDisabled())return;
 
+        contentSplitPane.getItems().clear();
+        simulationsManager = new SimulationsManager(simulationProperties);
+        if (!addSimulation()) return;
+        if(runTwoMapsCheckbox.isSelected()){
+            if (!addSimulation()) return;
+        }
 
 
+    }
+
+    private boolean addSimulation() {
+        try {
+            BorderPane simulationBorderPane = simulationsManager.createNewSimulation();
+            contentSplitPane.getItems().add(simulationBorderPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

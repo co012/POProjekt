@@ -21,12 +21,13 @@
        </MenuBar>
    </top>
    <bottom>
-       <GridPane BorderPane.alignment="CENTER">
+       <GridPane prefHeight="50.0" BorderPane.alignment="CENTER">
            <columnConstraints>
                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
            </columnConstraints>
            <rowConstraints>
                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -48,7 +49,7 @@
                <Label text="Animal start energy: " />
                <Label fx:id="animalStartEnergyLabel" text="0" />
            </HBox>
-           <HBox alignment="CENTER_LEFT" GridPane.rowIndex="2">
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <Label text="Animals on day : " />
                <Label fx:id="startAnimalsNumberLabel" text="0" />
            </HBox>
@@ -64,7 +65,7 @@
                <Label text="Plant energy: " />
                <Label fx:id="energyFromPlantLabel" text="0" />
            </HBox>
-           <HBox alignment="CENTER_LEFT" GridPane.rowIndex="1">
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="4">
                <Label text="Animal move energy: " />
                <Label fx:id="animalMoveEnergyLabel" text="0" />
            </HBox>
@@ -76,8 +77,8 @@
                <Label text="Jungle height: " />
                <Label fx:id="jungleHeightLabel" text="0" />
            </HBox>
-           <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <Button fx:id="startButton" disable="true" mnemonicParsing="false" text="Start" />
+           <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowSpan="3">
+               <Button fx:id="startButton" disable="true" mnemonicParsing="false" onAction="#onStartButtonClicked" text="Start" />
            </HBox>
        </GridPane>
    </bottom>

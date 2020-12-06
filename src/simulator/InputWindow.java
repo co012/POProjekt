@@ -30,7 +30,7 @@ public class InputWindow extends Stage {
 
     public InputWindow() throws IOException {
         super();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml/input_window.fxml"));
+        FXMLLoader loader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/input_window.fxml"));
         loader.setController(this);
         loader.load();
         this.setTitle("Enter evolution simulation parameters");
