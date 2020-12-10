@@ -3,11 +3,9 @@ package simulator;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 
-import java.awt.*;
+
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -25,6 +23,7 @@ public class SimulationsManager {
     public BorderPane createNewSimulation() throws IOException {
         BorderPane pane = new BorderPane();
 
+
         FXMLLoader statisticSidebarLoader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/statistic_sidebar.fxml"));
         Node statisticSidebarNode = statisticSidebarLoader.load();
         StatisticSidebarController statisticSidebarController = statisticSidebarLoader.getController();
@@ -35,12 +34,24 @@ public class SimulationsManager {
         FollowAnimalController followAnimalController = followAnimalLoader.getController();
         statisticSidebarController.addFollowNode(followAnimalNode);
 
-        Canvas mapCanvas = new Canvas(simulationProperties.mapWidth,simulationProperties.mapHeight);
-        pane.setCenter(mapCanvas);
+
+        Canvas mapCanvas = new Canvas();
+        CanvasPane canvasPane = new CanvasPane(mapCanvas);
+        pane.setCenter(canvasPane);
+
+
 
         Simulation simulation = new Simulation(simulationProperties,mapCanvas,statisticSidebarController,followAnimalController);
-
         simulations.add(simulation);
         return pane;
     }
+
+    public void startSimulations(){
+        simulations.forEach(Simulation::start);
+    }
+
+    public void stopSimulations(){
+        simulations.forEach(Simulation::end);
+    }
+
 }

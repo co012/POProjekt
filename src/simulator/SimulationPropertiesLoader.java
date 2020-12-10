@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class SimulationPropertiesLoader {
-    private final FileChooser fileChooser;
 
     private final static String MAP_WIDTH = "width";
     private final static String MAP_HEIGHT = "height";
@@ -21,23 +20,19 @@ public class SimulationPropertiesLoader {
     private final static String JUNGLE_WIDTH = "jungleWidth";
     private final static String JUNGLE_HEIGHT = "jungleHeight";
     private final static String START_ANIMAL_NUMBER = "startAnimalsNumber";
-    private final static String PLANTS_PER_DAY = "plantsPerDay";
+    private final static String PLANTS_PER_DAY_INSIDE_JUNGLE = "plantsPerDayInsideJungle";
+    private final static String PLANTS_PER_DAY_OUTSIDE_JUNGLE = "plantsPerDayOutsideJungle";
     private final static String MIN_ENERGY_FOR_REPRODUCTION = "minEnergyForReproduction";
 
     public SimulationPropertiesLoader(){
-        fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("*.json", "*.json");
-        fileChooser.getExtensionFilters().add(filter);
-        fileChooser.setSelectedExtensionFilter(filter);
-        fileChooser.setTitle("Select simulation properties file");
+
     }
 
 
 //TODO: Use Optional
-    public SimulationProperties loadFromJsonFile(Window window) throws FileNotFoundException,ClassCastException,NullPointerException {
+    public SimulationProperties loadFromJsonFile(File file) throws FileNotFoundException,ClassCastException,NullPointerException {
 
-        File file = fileChooser.showOpenDialog(window);
-        if(file == null) return null;
+
 
         JsonReader reader = Json.createReader(new FileInputStream(file));
         JsonObject jsonObject = reader.readObject();
@@ -50,7 +45,8 @@ public class SimulationPropertiesLoader {
         int jungleWidth = jsonObject.getInt(JUNGLE_WIDTH);
         int jungleHeight = jsonObject.getInt(JUNGLE_HEIGHT);
         int startAnimalsNumber = jsonObject.getInt(START_ANIMAL_NUMBER);
-        int plantsPerDay = jsonObject.getInt(PLANTS_PER_DAY);
+        int plantsPerDayInsideJungle = jsonObject.getInt(PLANTS_PER_DAY_INSIDE_JUNGLE);
+        int plantsPerDayOutsideJungle = jsonObject.getInt(PLANTS_PER_DAY_OUTSIDE_JUNGLE);
         int minEnergyForReproduction = jsonObject.getInt(MIN_ENERGY_FOR_REPRODUCTION);
 
 
@@ -62,7 +58,8 @@ public class SimulationPropertiesLoader {
                 jungleWidth,
                 jungleHeight,
                 startAnimalsNumber,
-                plantsPerDay,
+                plantsPerDayInsideJungle,
+                plantsPerDayOutsideJungle,
                 minEnergyForReproduction);
     }
 }

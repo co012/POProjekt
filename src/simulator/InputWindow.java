@@ -21,7 +21,8 @@ public class InputWindow extends Stage {
     @FXML NumberField jungleWidthNumberField;
     @FXML NumberField jungleHeightNumberField;
     @FXML NumberField startAnimalsNumberNumberField;
-    @FXML NumberField plantsPerDayNumberField;
+    @FXML NumberField plantsPerDayInsideJungleNumberField;
+    @FXML NumberField plantsPerDayOutsideJungleNumberField;
     @FXML NumberField minEnergyForReproductionNumberField;
     @FXML Button okButton;
     @FXML GridPane mainGridPane;
@@ -66,7 +67,8 @@ public class InputWindow extends Stage {
         int jungleWidth = jungleWidthNumberField.getInt();
         int jungleHeight = jungleHeightNumberField.getInt();
         int startAnimalsNumber = startAnimalsNumberNumberField.getInt();
-        int plantsPerDay = plantsPerDayNumberField.getInt();
+        int plantsPerDayInsideJungle = plantsPerDayInsideJungleNumberField.getInt();
+        int plantsPerDayOutsideJungle = plantsPerDayOutsideJungleNumberField.getInt();
         int minEnergyForReproduction = minEnergyForReproductionNumberField.getInt();
 
         properties = new SimulationProperties(
@@ -78,7 +80,8 @@ public class InputWindow extends Stage {
                 jungleWidth,
                 jungleHeight,
                 startAnimalsNumber,
-                plantsPerDay,
+                plantsPerDayInsideJungle,
+                plantsPerDayOutsideJungle,
                 minEnergyForReproduction
         );
 

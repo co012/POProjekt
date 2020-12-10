@@ -6,10 +6,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.*;
 
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class AppController {
+    private final FileChooser fileChooser;
     @FXML private CheckMenuItem runTwoMapsCheckbox;
     @FXML private Label mapWidthLabel;
     @FXML private Label mapHeightLabel;
@@ -19,7 +21,8 @@ public class AppController {
     @FXML private Label jungleWidthLabel;
     @FXML private Label jungleHeightLabel;
     @FXML private Label startAnimalsNumberLabel;
-    @FXML private Label plantsPerDayLabel;
+    @FXML private Label plantsPerDayInsideJungleLabel;
+    @FXML private Label plantsPerDayOutsideJungleLabel;
     @FXML private Label minEnergyForReproductionLabel;
     @FXML private Button startButton;
     @FXML private SplitPane contentSplitPane;
@@ -29,18 +32,43 @@ public class AppController {
     private SimulationProperties simulationProperties;
 
 
+    public AppController(){
+        fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("*.json", "*.json");
+        fileChooser.getExtensionFilters().add(filter);
+        fileChooser.setSelectedExtensionFilter(filter);
+        fileChooser.setTitle("Select simulation properties file");
+    }
+
 
     public void setStage(Stage primaryStage){
         stage = primaryStage;
+        stage.setOnCloseRequest(e -> {
+            if(simulationsManager != null)simulationsManager.stopSimulations();
+        });
     }
 
     @FXML
     private void onLoadFromFileClicked(){
 
+        File propertiesFile = fileChooser.showOpenDialog(stage);
+        if(propertiesFile == null) return;
+
+        loadFromFile(propertiesFile);
+
+
+    }
+
+    public void loadFromFile(String filePath){
+        File file = new File(filePath);
+        loadFromFile(file);
+    }
+
+    private void loadFromFile(File propertiesFile) {
         SimulationPropertiesLoader propertiesLoader = new SimulationPropertiesLoader();
 
         try {
-            SimulationProperties properties = propertiesLoader.loadFromJsonFile(stage);
+            SimulationProperties properties = propertiesLoader.loadFromJsonFile(propertiesFile);
             prepareForSimulation(properties);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -50,8 +78,6 @@ public class AppController {
             alert.show();
 
         }
-
-
     }
 
     @FXML
@@ -77,7 +103,8 @@ public class AppController {
         jungleWidthLabel.setText(String.valueOf(properties.jungleWidth));
         jungleHeightLabel.setText(String.valueOf(properties.jungleHeight));
         startAnimalsNumberLabel.setText(String.valueOf(properties.startAnimalsNumber));
-        plantsPerDayLabel.setText(String.valueOf(properties.plantsPerDay));
+        plantsPerDayInsideJungleLabel.setText(String.valueOf(properties.plantsPerDayInsideJungle));
+        plantsPerDayOutsideJungleLabel.setText(String.valueOf(properties.plantsPerDayOutsideJungle));
         minEnergyForReproductionLabel.setText(String.valueOf(properties.minEnergyForReproduction));
 
         if(!properties.areValid()){
@@ -98,22 +125,23 @@ public class AppController {
 
         contentSplitPane.getItems().clear();
         simulationsManager = new SimulationsManager(simulationProperties);
-        if (!addSimulation()) return;
-        if(runTwoMapsCheckbox.isSelected()){
-            if (!addSimulation()) return;
-        }
+        addSimulation();
+        if(runTwoMapsCheckbox.isSelected()) addSimulation();
+        simulationsManager.startSimulations();
 
 
     }
 
-    private boolean addSimulation() {
+
+
+    private void addSimulation() {
         try {
             BorderPane simulationBorderPane = simulationsManager.createNewSimulation();
             contentSplitPane.getItems().add(simulationBorderPane);
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+
         }
-        return true;
+
     }
 }

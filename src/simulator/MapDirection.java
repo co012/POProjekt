@@ -24,7 +24,7 @@ public enum MapDirection {
 
     }
 
-    public MapDirection getRandomDirection(){
+    public static MapDirection getRandomDirection(){
         int n = MapDirection.values().length;
         int i = new Random().nextInt(n);
         return MapDirection.values()[i];

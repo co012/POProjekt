@@ -10,21 +10,9 @@ public final class SimulationProperties {
     public final int jungleWidth;
     public final int jungleHeight;
     public final int startAnimalsNumber;
-    public final int plantsPerDay;
+    public final int plantsPerDayInsideJungle;
+    public final int plantsPerDayOutsideJungle;
     public final int minEnergyForReproduction;
-
-    public SimulationProperties(int mapWidth, int mapHeight, int animalStartEnergy, int animalMoveEnergy, int energyFromPlant, int jungleWidth, int jungleHeight, int startAnimalsNumber, int plantsPerDay, int minEnergyForReproduction) {
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.animalStartEnergy = animalStartEnergy;
-        this.animalMoveEnergy = animalMoveEnergy;
-        this.energyFromPlant = energyFromPlant;
-        this.jungleHeight = jungleHeight;
-        this.jungleWidth = jungleWidth;
-        this.startAnimalsNumber = startAnimalsNumber;
-        this.plantsPerDay = plantsPerDay;
-        this.minEnergyForReproduction = minEnergyForReproduction;
-    }
 
     @Override
     public String toString() {
@@ -37,9 +25,24 @@ public final class SimulationProperties {
                 ", jungleWidth=" + jungleWidth +
                 ", jungleHeight=" + jungleHeight +
                 ", startAnimalsNumber=" + startAnimalsNumber +
-                ", plantsPerDay=" + plantsPerDay +
+                ", plantsPerDayInsideJungle=" + plantsPerDayInsideJungle +
+                ", plantsPerDayOutsideJungle=" + plantsPerDayOutsideJungle +
                 ", minEnergyForReproduction=" + minEnergyForReproduction +
                 '}';
+    }
+
+    public SimulationProperties(int mapWidth, int mapHeight, int animalStartEnergy, int animalMoveEnergy, int energyFromPlant, int jungleWidth, int jungleHeight, int startAnimalsNumber, int plantsPerDayInsideJungle, int plantsPerDayOutsideJungle, int minEnergyForReproduction) {
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        this.animalStartEnergy = animalStartEnergy;
+        this.animalMoveEnergy = animalMoveEnergy;
+        this.energyFromPlant = energyFromPlant;
+        this.jungleHeight = jungleHeight;
+        this.jungleWidth = jungleWidth;
+        this.startAnimalsNumber = startAnimalsNumber;
+        this.plantsPerDayInsideJungle = plantsPerDayInsideJungle;
+        this.plantsPerDayOutsideJungle = plantsPerDayOutsideJungle;
+        this.minEnergyForReproduction = minEnergyForReproduction;
     }
 
     public boolean areValid() {

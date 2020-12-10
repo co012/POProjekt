@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -19,6 +20,10 @@ public class Main extends Application {
         AppController controller = loader.getController();
         controller.setStage(primaryStage);
         primaryStage.show();
+
+        List<String> parametersList = getParameters().getUnnamed();
+        if(!parametersList.isEmpty())controller.loadFromFile(parametersList.get(0));
+
     }
 
 

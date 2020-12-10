@@ -54,10 +54,14 @@
                <Label fx:id="startAnimalsNumberLabel" text="0" />
            </HBox>
            <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <Label text="Plants spawned per day: " />
-               <Label fx:id="plantsPerDayLabel" text="0" />
+               <Label text="New plants per day inside jungle: " />
+               <Label fx:id="plantsPerDayInsideJungleLabel" text="0" />
            </HBox>
            <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <Label text="New plants per day outside jungle: " />
+               <Label fx:id="plantsPerDayOutsideJungleLabel" text="0" />
+           </HBox>
+           <HBox alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="2">
                <Label text="Energy needed for mating: " />
                <Label fx:id="minEnergyForReproductionLabel" text="0" />
            </HBox>
@@ -83,6 +87,6 @@
        </GridPane>
    </bottom>
    <center>
-      <SplitPane fx:id="contentSplitPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <SplitPane fx:id="contentSplitPane" BorderPane.alignment="CENTER_LEFT" />
    </center>
 </BorderPane>
