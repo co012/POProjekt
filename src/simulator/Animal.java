@@ -9,12 +9,14 @@ public class Animal implements IDrawableMapElement {
 
     private Vector2d position;
     private final int startEnergy;
-    private int energy;
     private final int moveEnergy;
+    private int energy;
+    private int age;
     private MapDirection mapDirection;
     private final WorldMap map;
     private final Genotype genotype;
     private final static String ANIMAL_COLOR = "#A0522D";
+
 
 
 
@@ -32,6 +34,7 @@ public class Animal implements IDrawableMapElement {
         this.genotype = genotype;
         this.mapDirection = MapDirection.getRandomDirection();
         this.startEnergy = startEnergy;
+        age = 0;
     }
 
 
@@ -45,6 +48,11 @@ public class Animal implements IDrawableMapElement {
         mapDirection = mapDirection.shiftMapDirection(shift);
         position = map.getNewPosition(position, mapDirection);
         energy -= moveEnergy;
+
+    }
+
+    public void beginDay(){
+        age++;
     }
 
     public Animal reproduce(Animal that) {
@@ -74,11 +82,18 @@ public class Animal implements IDrawableMapElement {
         graphicsContext.fillRect(x,y,xScale,yScale);
     }
 
-    public boolean isAlive(){
-        return energy > 0;
+    public boolean isDead(){
+        return energy <= 0;
     }
 
     public int getEnergy() {
         return energy;
+    }
+    public int getAge() {
+        return age;
+    }
+
+    public int[] getGeneFrequency(){
+        return genotype.getGeneFrequencyArray();
     }
 }

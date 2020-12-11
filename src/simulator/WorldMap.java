@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WorldMap {
@@ -14,11 +15,14 @@ public class WorldMap {
     private final Vector2d jungleLowerLeftCorner;
     private final Vector2d jungleUpperRightCorner;
     private final Vector2d jungleDimensions;
-    private LinkedList<Animal> animalsList;
+    private final LinkedList<Animal> animalsList;
     private final LinkedList<Plant> plantsList;
     private final LinkedList<Vector2d> plantlessJungleFieldList;
     private final LinkedList<Vector2d> plantlessSteppeFieldList;
     private HashMap<Vector2d, LinkedList<Animal>> animalsHashMap;
+
+    private int todayChildrenNumber;
+    private double recentLifeExpectancy;
 
 
     public WorldMap(Vector2d mapDimensions, Vector2d jungleLowerLeftCorner, Vector2d jungleUpperRightCorner) {
@@ -35,9 +39,9 @@ public class WorldMap {
 
         for (int i = 0; i < mapDimensions.x; i++) {
             for (int j = 0; j < mapDimensions.y; j++) {
-                Vector2d mapField = new Vector2d(i,j);
+                Vector2d mapField = new Vector2d(i, j);
 
-                if(isInJungle(mapField)){
+                if (isInJungle(mapField)) {
                     plantlessJungleFieldList.add(mapField);
                 } else {
                     plantlessSteppeFieldList.add(mapField);
@@ -48,13 +52,16 @@ public class WorldMap {
         Collections.shuffle(plantlessJungleFieldList);
         Collections.shuffle(plantlessSteppeFieldList);
 
+        todayChildrenNumber = 0;
+        recentLifeExpectancy = 0;
+
     }
 
-    public int getAnimalsNumber(){
+    public int getAnimalsNumber() {
         return animalsList.size();
     }
 
-    public int getPlantsNumber(){
+    public int getPlantsNumber() {
         return plantsList.size();
     }
 
@@ -66,15 +73,15 @@ public class WorldMap {
 
     //TODO: think about better name
     public Vector2d getRandomNeighbourEmptyFieldIfPossible(Vector2d vector) {
-        Vector2d from = vector.subtract(new Vector2d(1,1));
-        Vector2d to = vector.add(new Vector2d(2,2));
-        Vector2d field = Vector2d.getRandomVector(from,to);
+        Vector2d from = vector.subtract(new Vector2d(1, 1));
+        Vector2d to = vector.add(new Vector2d(2, 2));
+        Vector2d field = Vector2d.getRandomVector(from, to);
         for (int i = 0; i < 9; i++) {
-            if(animalsHashMap.get(field) == null)break;
-            field = field.getLinearNextInRectangle(from,to);
+            if (animalsHashMap.get(field) == null) break;
+            field = field.getLinearNextInRectangle(from, to);
         }
 
-        if(field.equals(vector)) field.getLinearNextInRectangle(from,to);
+        if (field.equals(vector)) field.getLinearNextInRectangle(from, to);
 
         return field;
     }
@@ -98,21 +105,21 @@ public class WorldMap {
 
     }
 
-    public void spawnAnimals(int animalsNumber, int startEnergy, int moveEnergy){
+    public void spawnAnimals(int animalsNumber, int startEnergy, int moveEnergy) {
         for (int i = 0; i < animalsNumber; i++) {
-            spawnAnimal(startEnergy,moveEnergy);
+            spawnAnimal(startEnergy, moveEnergy);
         }
     }
 
-    private void spawnAnimal(int startEnergy,int moveEnergy){
-        Vector2d positionCandidate = Vector2d.getRandomVector(Vector2d.ZERO,mapDimensions);
+    private void spawnAnimal(int startEnergy, int moveEnergy) {
+        Vector2d positionCandidate = Vector2d.getRandomVector(Vector2d.ZERO, mapDimensions);
 
         for (int i = 0; i < mapDimensions.toAreaOfRectangle(); i++) {
-            if(!animalsHashMap.containsKey(positionCandidate)) break;
-            positionCandidate = positionCandidate.getLinearNextInRectangle(Vector2d.ZERO,mapDimensions);
+            if (!animalsHashMap.containsKey(positionCandidate)) break;
+            positionCandidate = positionCandidate.getLinearNextInRectangle(Vector2d.ZERO, mapDimensions);
         }
 
-        addAnimal(new Animal(this,positionCandidate,startEnergy,moveEnergy));
+        addAnimal(new Animal(this, positionCandidate, startEnergy, moveEnergy));
 
     }
 
@@ -120,10 +127,10 @@ public class WorldMap {
         animalsList.add(animal);
         LinkedList<Animal> animalsOnField = animalsHashMap.get(animal.getPosition());
 
-        if(animalsOnField == null){
+        if (animalsOnField == null) {
             LinkedList<Animal> newAnimalsOnFieldList = new LinkedList<>();
             newAnimalsOnFieldList.add(animal);
-            animalsHashMap.put(animal.getPosition(),newAnimalsOnFieldList);
+            animalsHashMap.put(animal.getPosition(), newAnimalsOnFieldList);
         } else {
             animalsOnField.add(animal);
         }
@@ -133,7 +140,7 @@ public class WorldMap {
     public void spawnPlantsInsideJungle(int plantsNumber, int energyFromEatingPlant) {
 
         for (int i = 0; i < plantsNumber; i++) {
-            spawnPlant(new LinkedList<>(plantlessJungleFieldList),energyFromEatingPlant);
+            spawnPlant(new LinkedList<>(plantlessJungleFieldList), energyFromEatingPlant);
         }
 
     }
@@ -141,7 +148,7 @@ public class WorldMap {
     public void spawnPlantsOutsideJungle(int plantsNumber, int energyFromEatingPlant) {
 
         for (int i = 0; i < plantsNumber; i++) {
-            spawnPlant(new LinkedList<>(plantlessSteppeFieldList),energyFromEatingPlant);
+            spawnPlant(new LinkedList<>(plantlessSteppeFieldList), energyFromEatingPlant);
         }
 
     }
@@ -149,24 +156,29 @@ public class WorldMap {
     private void spawnPlant(LinkedList<Vector2d> positionCandidates, int energyFromEatingPlant) {
 
         Vector2d position = null;
-        for(Vector2d positionCandidate : positionCandidates){
-            if(animalsHashMap.containsKey(positionCandidate))continue;
+        for (Vector2d positionCandidate : positionCandidates) {
+            if (animalsHashMap.containsKey(positionCandidate)) continue;
 
             position = positionCandidate;
             break;
         }
 
-        if(position == null) return;
+        if (position == null) return;
 
-        plantsList.add(new Plant(position,energyFromEatingPlant));
+        plantsList.add(new Plant(position, energyFromEatingPlant));
 
-        if(isInJungle(position)){
+        if (isInJungle(position)) {
             plantlessJungleFieldList.remove(position);
-        }else{
+        } else {
             plantlessSteppeFieldList.remove(position);
         }
 
 
+    }
+
+    public void beginDay(){
+        todayChildrenNumber = 0;
+        animalsList.forEach(Animal::beginDay);
     }
 
     public void moveAnimals() {
@@ -182,19 +194,19 @@ public class WorldMap {
     public void eatPlants() {
         LinkedList<Plant> copyOfPlantsList = new LinkedList<>(plantsList);
 
-        for(Plant plant: copyOfPlantsList){
-            if(!animalsHashMap.containsKey(plant.getPosition())) continue;
+        for (Plant plant : copyOfPlantsList) {
+            if (!animalsHashMap.containsKey(plant.getPosition())) continue;
 
             LinkedList<Animal> animalsOnField = animalsHashMap.get(plant.getPosition());
             LinkedList<Animal> animalsWithGreatestEnergy = getAnimalsWithGreatestEnergy(animalsOnField);
             int energyPerAnimal = plant.getNutritionalValue() / animalsWithGreatestEnergy.size();
-            for (Animal animal : animalsWithGreatestEnergy){
+            for (Animal animal : animalsWithGreatestEnergy) {
                 animal.eat(energyPerAnimal);
             }
 
-            if(isInJungle(plant.getPosition())){
+            if (isInJungle(plant.getPosition())) {
                 plantlessJungleFieldList.add(plant.getPosition());
-            }else{
+            } else {
                 plantlessSteppeFieldList.add(plant.getPosition());
             }
 
@@ -202,22 +214,22 @@ public class WorldMap {
         }
     }
 
-    private LinkedList<Animal> getAnimalsWithGreatestEnergy(LinkedList<Animal> animals){
+    private LinkedList<Animal> getAnimalsWithGreatestEnergy(LinkedList<Animal> animals) {
         Optional<Animal> optionalOfAnimalWithGreatestEnergy = animals.stream().max(Comparator.comparingInt(Animal::getEnergy));
-        if(optionalOfAnimalWithGreatestEnergy.isEmpty()) {
+        if (optionalOfAnimalWithGreatestEnergy.isEmpty()) {
             throw new IllegalArgumentException("animals can't be an empty list");
         }
 
         Animal animalWithGreatestEnergy = optionalOfAnimalWithGreatestEnergy.get();
         return animals.stream()
-                .filter( animal -> animal.getEnergy() == animalWithGreatestEnergy.getEnergy())
+                .filter(animal -> animal.getEnergy() == animalWithGreatestEnergy.getEnergy())
                 .collect(Collectors.toCollection(LinkedList::new));
 
     }
 
 
     public void reproduceAnimals(int minEnergyForReproduction) {
-        HashMap<Vector2d,LinkedList<Animal>> copyOfAnimalsHashMap = new HashMap<>(animalsHashMap);
+        HashMap<Vector2d, LinkedList<Animal>> copyOfAnimalsHashMap = new HashMap<>(animalsHashMap);
         for (LinkedList<Animal> animalsOnField : copyOfAnimalsHashMap.values()) {
             LinkedList<Animal> parents = animalsOnField.stream()
                     .filter(animal -> animal.getEnergy() >= minEnergyForReproduction)
@@ -228,16 +240,59 @@ public class WorldMap {
             if (parents.size() < 2) continue;
 
             addAnimal(parents.get(0).reproduce(parents.get(1)));
+            todayChildrenNumber++;
         }
 
     }
 
     public void removeDeadAnimals() {
         //TODO:Should I prioritise making animalList final
-        animalsList = animalsList.stream().filter(Animal::isAlive).collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<Animal> deadAnimalsList = animalsList.stream()
+                .filter(Animal::isDead)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        if (deadAnimalsList.isEmpty()) return;
+
+        double ageSum = deadAnimalsList
+                .stream()
+                .mapToDouble(Animal::getAge)
+                .sum();
+
+        recentLifeExpectancy = ageSum / deadAnimalsList.size();
+
+        animalsList.removeAll(deadAnimalsList);
     }
 
-    private boolean isInJungle(Vector2d field){
-        return field.isInsideRectangle(jungleLowerLeftCorner,jungleUpperRightCorner);
+    private boolean isInJungle(Vector2d field) {
+        return field.isInsideRectangle(jungleLowerLeftCorner, jungleUpperRightCorner);
+    }
+
+    public int getAvgEnergy() {
+        int energySum = animalsList
+                .stream()
+                .mapToInt(Animal::getEnergy)
+                .sum();
+        return energySum / animalsList.size();
+    }
+
+    public double getLifeExpectancy() {
+        return recentLifeExpectancy;
+    }
+
+    public double getAvgChildrenNumber() {
+        return todayChildrenNumber / (double) animalsList.size();
+    }
+
+    public int[] getMostPopularGenotype(){
+
+        Optional<Map.Entry<int[],Long>> genotypeAndFrequency = animalsList.stream()
+                .map(Animal::getGeneFrequency)
+                .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue());
+
+        if(genotypeAndFrequency.isEmpty()) return new int[Genotype.GENS_TYPES_NUMBER];
+        else return genotypeAndFrequency.get().getKey();
     }
 }

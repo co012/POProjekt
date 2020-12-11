@@ -2,41 +2,51 @@ package simulator;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.layout.Pane;
 
 public class StatisticSidebarController {
-    @FXML private LineChart<String,Integer> statisticsLineChart;
+    @FXML private LineChart<String,Integer> firstStatisticsLineChart;
+    @FXML private LineChart<String,Double> secondStatisticsLineChart;
     @FXML private BarChart<String,Integer> mostPopularGenotypeBarChart;
-    @FXML private Pane followPane;
     private final XYChart.Series<String,Integer> animalsNumberSeries;
     private final XYChart.Series<String,Integer> plantsNumberSeries;
+    private final XYChart.Series<String,Integer> avgEnergySeries;
+    private final XYChart.Series<String,Double> lifeExpectancySeries;
+    private final XYChart.Series<String,Double> birthRateSeries;
+    private final XYChart.Series<String, Integer> mostPopularGenotypeSeries;
+
 
 
 
     public StatisticSidebarController(){
         animalsNumberSeries = new XYChart.Series<>();
+        animalsNumberSeries.setName("Animals number");
         plantsNumberSeries = new XYChart.Series<>();
+        plantsNumberSeries.setName("Plants number");
+        avgEnergySeries = new XYChart.Series<>();
+        avgEnergySeries.setName("Average energy");
+        lifeExpectancySeries = new XYChart.Series<>();
+        lifeExpectancySeries.setName("Life expectancy");
+        birthRateSeries = new XYChart.Series<>();
+        birthRateSeries.setName("Birth rate");
+        mostPopularGenotypeSeries = new XYChart.Series<>();
+        for (int i = 0; i < Genotype.GENS_TYPES_NUMBER; i++) {
+            mostPopularGenotypeSeries.getData().add(new XYChart.Data<>(String.valueOf(i),i));
+        }
         Platform.runLater(this::init);
     }
 
     private void init(){
-        XYChart.Series<String,Integer> series = new XYChart.Series<>();
-        for (int i = 0; i < 8; i++) {
-            series.getData().add(new XYChart.Data<>(String.valueOf(i),2));
-        }
-        mostPopularGenotypeBarChart.getData().add(series);
+        mostPopularGenotypeBarChart.getData().add(mostPopularGenotypeSeries);
 
-        statisticsLineChart.getData().add(animalsNumberSeries);
-        statisticsLineChart.getData().add(plantsNumberSeries);
+        firstStatisticsLineChart.getData().add(animalsNumberSeries);
+        firstStatisticsLineChart.getData().add(plantsNumberSeries);
 
-
-    }
-
-    public void addNewDayData(int day,int numberOfAnimals, int numberOfPlants, int avgAnimalEnergy, int animalLiveExpectancy, int numberOfChildren){
+        firstStatisticsLineChart.getData().add(avgEnergySeries);
+        secondStatisticsLineChart.getData().add(lifeExpectancySeries);
+        secondStatisticsLineChart.getData().add(birthRateSeries);
 
     }
 
@@ -48,12 +58,23 @@ public class StatisticSidebarController {
         plantsNumberSeries.getData().add(new XYChart.Data<>(String.valueOf(day),plantsNumber));
     }
 
+    public void addNewAvgEnergyOnDayData(int avgEnergy, int day){
+        avgEnergySeries.getData().add(new XYChart.Data<>(String.valueOf(day),avgEnergy));
+    }
+
+    public void addNewLifeExpectancyOnDayData(double liveExpectancy, int day){
+        lifeExpectancySeries.getData().add(new XYChart.Data<>(String.valueOf(day),liveExpectancy));
+    }
+
+    public void addNewBirthRateOnDayData(double birtRate, int day){
+        birthRateSeries.getData().add(new XYChart.Data<>(String.valueOf(day),birtRate));
+    }
+
     public void setMostPopularGenotype(int[] genotype){
-
+        mostPopularGenotypeSeries.getData().forEach( data -> {
+            int i = Integer.parseInt(data.getXValue());
+            data.setYValue(genotype[i]);
+        });
     }
 
-    public void addFollowNode(Node followNode){
-        followPane.getChildren().clear();
-        followPane.getChildren().add(followNode);
-    }
 }

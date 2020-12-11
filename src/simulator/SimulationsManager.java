@@ -29,10 +29,10 @@ public class SimulationsManager {
         StatisticSidebarController statisticSidebarController = statisticSidebarLoader.getController();
         pane.setLeft(statisticSidebarNode);
 
-        FXMLLoader followAnimalLoader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/follow_animal_scene.fxml"));
-        Node followAnimalNode = followAnimalLoader.load();
+        FXMLLoader followAnimalLoader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/follow_animal_sidebar.fxml"));
+        Node followAnimalSidebarNode = followAnimalLoader.load();
         FollowAnimalController followAnimalController = followAnimalLoader.getController();
-        statisticSidebarController.addFollowNode(followAnimalNode);
+        pane.setRight(followAnimalSidebarNode);
 
 
         Canvas mapCanvas = new Canvas();

@@ -3,7 +3,7 @@ package simulator;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 
-public class Simulation extends Thread{
+public class Simulation extends Thread {
     private final SimulationProperties properties;
     private final StatisticSidebarController sidebarController;
     private final FollowAnimalController followAnimalController;
@@ -13,7 +13,7 @@ public class Simulation extends Thread{
     private volatile boolean hasEnded;
     private int day;
 
-    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController sidebarController, FollowAnimalController followAnimalController){
+    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController sidebarController, FollowAnimalController followAnimalController) {
         this.properties = properties;
         this.sidebarController = sidebarController;
         this.followAnimalController = followAnimalController;
@@ -22,33 +22,32 @@ public class Simulation extends Thread{
         day = 0;
 
 
-
-
     }
 
-    private WorldMap prepareMap(){
+    private WorldMap prepareMap() {
         int jungleX1 = (properties.mapWidth - properties.jungleWidth) / 2;
         int jungleY1 = (properties.mapHeight - properties.jungleHeight) / 2;
-        Vector2d jungleLowerLeftCorner = new Vector2d(jungleX1,jungleY1);
+        Vector2d jungleLowerLeftCorner = new Vector2d(jungleX1, jungleY1);
 
         int jungleX2 = (properties.mapWidth + properties.jungleWidth) / 2;
         int jungleY2 = (properties.mapHeight + properties.jungleHeight) / 2;
-        Vector2d jungleUpperRightCorner = new Vector2d(jungleX2,jungleY2);
+        Vector2d jungleUpperRightCorner = new Vector2d(jungleX2, jungleY2);
 
-        Vector2d mapDimensions = new Vector2d(properties.mapWidth,properties.mapHeight);
+        Vector2d mapDimensions = new Vector2d(properties.mapWidth, properties.mapHeight);
 
-        WorldMap map = new WorldMap(mapDimensions,jungleLowerLeftCorner,jungleUpperRightCorner);
+        WorldMap map = new WorldMap(mapDimensions, jungleLowerLeftCorner, jungleUpperRightCorner);
 
 
-        map.spawnAnimals(properties.startAnimalsNumber,properties.animalStartEnergy,properties.animalMoveEnergy);
+        map.spawnAnimals(properties.startAnimalsNumber, properties.animalStartEnergy, properties.animalMoveEnergy);
         map.spawnPlantsInsideJungle(properties.plantsPerDayInsideJungle, properties.energyFromPlant);
         map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
 
         return map;
     }
 
-    public void simulateADay(){
+    public void simulateADay() {
         day++;
+        map.beginDay();
         map.removeDeadAnimals();
         map.moveAnimals();
         map.eatPlants();
@@ -59,10 +58,14 @@ public class Simulation extends Thread{
 
     }
 
-    public void displayCurrentState(){
+    public void displayCurrentState() {
         map.drawMap(mapCanvas);
         sidebarController.addNewAnimalNumberOnDayData(map.getAnimalsNumber(), day);
         sidebarController.addNewPlantsNumberOnDayData(map.getPlantsNumber(), day);
+        sidebarController.addNewAvgEnergyOnDayData(map.getAvgEnergy(), day);
+        sidebarController.addNewBirthRateOnDayData(map.getAvgChildrenNumber(), day);
+        sidebarController.addNewLifeExpectancyOnDayData(map.getLifeExpectancy(), day);
+        sidebarController.setMostPopularGenotype(map.getMostPopularGenotype());
     }
 
     @Override
@@ -81,8 +84,8 @@ public class Simulation extends Thread{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        while(!isInterrupted() && !hasEnded) {
-            if(!isPaused)simulateADay();
+        while (!isInterrupted() && !hasEnded) {
+            if (!isPaused) simulateADay();
             Platform.runLater(this::displayCurrentState);
             try {
                 sleep(1000);
@@ -97,13 +100,15 @@ public class Simulation extends Thread{
         super.interrupt();
     }
 
-    public void pause(){
+    public void pause() {
         isPaused = true;
     }
-    public void unPause(){
+
+    public void unPause() {
         isPaused = false;
     }
-    public void end(){
+
+    public void end() {
         this.hasEnded = true;
     }
 

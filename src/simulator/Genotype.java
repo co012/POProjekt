@@ -1,11 +1,13 @@
 package simulator;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Genotype {
-    private static final int GENS_TYPES_NUMBER = 8;
-    private static final int GENOTYPE_LENGTH = 32;
+    public static final int GENS_TYPES_NUMBER = 8;
+    public static final int GENOTYPE_LENGTH = 32;
     private final int[] genotypeArray;
+    private final int[] geneFrequencyArray;
     private final Random random = new Random();
 
     public Genotype(){
@@ -14,6 +16,10 @@ public class Genotype {
             genotypeArray[i] = random.nextInt(GENS_TYPES_NUMBER);
         }
         fixGenotype();
+
+        geneFrequencyArray = getGenTypeFrequency();
+
+
     }
 
     public Genotype(Genotype genotype1,Genotype genotype2){
@@ -30,6 +36,9 @@ public class Genotype {
         System.arraycopy(genotype1.genotypeArray, secondCut, genotypeArray, secondCut, GENOTYPE_LENGTH - secondCut);
         //TODO:Do i need to make genotypes ratio constant
         fixGenotype();
+
+        geneFrequencyArray = getGenTypeFrequency();
+
     }
 
     private void fixGenotype() {
@@ -70,5 +79,22 @@ public class Genotype {
     public int getRandomGen(){
         int i = random.nextInt(GENOTYPE_LENGTH);
         return genotypeArray[i];
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Genotype genotype = (Genotype) o;
+        return Arrays.equals(geneFrequencyArray, genotype.geneFrequencyArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(geneFrequencyArray);
+    }
+
+    public int[] getGeneFrequencyArray(){
+        return Arrays.copyOf(geneFrequencyArray,GENS_TYPES_NUMBER);
     }
 }
