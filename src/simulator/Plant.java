@@ -4,12 +4,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Plant implements IDrawableMapElement {
-    public final int energy;
-    public final Vector2d position;
+    private final int nutritionalValue;
+    private final Vector2d position;
     private final static String PLANT_COLOR = "#119999";
 
-    public Plant(Vector2d position, int energy) {
-        this.energy = energy;
+    public Plant(Vector2d position, int nutritionalValue) {
+        this.nutritionalValue = nutritionalValue;
         this.position = position;
     }
 
@@ -23,6 +23,10 @@ public class Plant implements IDrawableMapElement {
 
     @Override
     public Vector2d getPosition() {
-        return null;
+        return position;
+    }
+
+    public int getNutritionalValue(){
+        return nutritionalValue;
     }
 }

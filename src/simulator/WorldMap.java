@@ -15,10 +15,10 @@ public class WorldMap {
     private final Vector2d jungleUpperRightCorner;
     private final Vector2d jungleDimensions;
     private LinkedList<Animal> animalsList;
-    private final LinkedList<Plant> plantsInsideJungleList;
-    private final LinkedList<Plant> plantsOutsideJungleList;
+    private final LinkedList<Plant> plantsList;
+    private final LinkedList<Vector2d> plantlessJungleFieldList;
+    private final LinkedList<Vector2d> plantlessSteppeFieldList;
     private HashMap<Vector2d, LinkedList<Animal>> animalsHashMap;
-    private final Random random;
 
 
     public WorldMap(Vector2d mapDimensions, Vector2d jungleLowerLeftCorner, Vector2d jungleUpperRightCorner) {
@@ -27,36 +27,56 @@ public class WorldMap {
         this.jungleUpperRightCorner = jungleUpperRightCorner;
         this.jungleDimensions = jungleUpperRightCorner.subtract(jungleLowerLeftCorner);
         animalsList = new LinkedList<>();
-        plantsInsideJungleList = new LinkedList<>();
-        plantsOutsideJungleList = new LinkedList<>();
+        plantsList = new LinkedList<>();
+        animalsHashMap = new HashMap<>();
 
-        random = new Random();
+        plantlessJungleFieldList = new LinkedList<>();
+        plantlessSteppeFieldList = new LinkedList<>();
+
+        for (int i = 0; i < mapDimensions.x; i++) {
+            for (int j = 0; j < mapDimensions.y; j++) {
+                Vector2d mapField = new Vector2d(i,j);
+
+                if(isInJungle(mapField)){
+                    plantlessJungleFieldList.add(mapField);
+                } else {
+                    plantlessSteppeFieldList.add(mapField);
+                }
+            }
+        }
+
+        Collections.shuffle(plantlessJungleFieldList);
+        Collections.shuffle(plantlessSteppeFieldList);
+
+    }
+
+    public int getAnimalsNumber(){
+        return animalsList.size();
+    }
+
+    public int getPlantsNumber(){
+        return plantsList.size();
     }
 
 
     public Vector2d getNewPosition(Vector2d oldPosition, MapDirection mapDirection) {
         Vector2d v = oldPosition.add(mapDirection.mapDirectionToVector2d());
-        return v.modulo(mapDimensions);
+        return v.moduloPositive(mapDimensions);
     }
 
-    public Optional<Vector2d> getRandomNeighbourEmptyField(Vector2d vector) {
+    //TODO: think about better name
+    public Vector2d getRandomNeighbourEmptyFieldIfPossible(Vector2d vector) {
         Vector2d from = vector.subtract(new Vector2d(1,1));
         Vector2d to = vector.add(new Vector2d(2,2));
         Vector2d field = Vector2d.getRandomVector(from,to);
         for (int i = 0; i < 9; i++) {
-            if(!field.equals(vector) && animalsHashMap.get(field) == null)break;
+            if(animalsHashMap.get(field) == null)break;
             field = field.getLinearNextInRectangle(from,to);
         }
 
-        return animalsHashMap.get(field) == null ? Optional.empty() : Optional.of(field);
-    }
+        if(field.equals(vector)) field.getLinearNextInRectangle(from,to);
 
-    public Vector2d getRandomNeighbourField(Vector2d field) {
-        Vector2d from = field.subtract(new Vector2d(1,1));
-        Vector2d to = field.add(new Vector2d(2,2));
-        Vector2d neighbourField = Vector2d.getRandomVector(from,to);
-        if(neighbourField.equals(field))neighbourField = neighbourField.getLinearNextInRectangle(from,to);
-        return neighbourField;
+        return field;
     }
 
     public void drawMap(Canvas canvas) {
@@ -74,63 +94,80 @@ public class WorldMap {
         graphicsContext.fillRect(jungleLowerLeftCorner.x * xScale, jungleLowerLeftCorner.y * yScale, jungleDimensions.x * xScale, jungleDimensions.y * yScale);
 
         animalsList.forEach(animal -> animal.draw(graphicsContext, xScale, yScale));
-        plantsInsideJungleList.forEach(plant -> plant.draw(graphicsContext, xScale, yScale));
-        plantsOutsideJungleList.forEach(plant -> plant.draw(graphicsContext, xScale, yScale));
+        plantsList.forEach(plant -> plant.draw(graphicsContext, xScale, yScale));
 
     }
 
+    public void spawnAnimals(int animalsNumber, int startEnergy, int moveEnergy){
+        for (int i = 0; i < animalsNumber; i++) {
+            spawnAnimal(startEnergy,moveEnergy);
+        }
+    }
 
-    public void addAnimal(Animal animal) {
+    private void spawnAnimal(int startEnergy,int moveEnergy){
+        Vector2d positionCandidate = Vector2d.getRandomVector(Vector2d.ZERO,mapDimensions);
+
+        for (int i = 0; i < mapDimensions.toAreaOfRectangle(); i++) {
+            if(!animalsHashMap.containsKey(positionCandidate)) break;
+            positionCandidate = positionCandidate.getLinearNextInRectangle(Vector2d.ZERO,mapDimensions);
+        }
+
+        addAnimal(new Animal(this,positionCandidate,startEnergy,moveEnergy));
+
+    }
+
+    private void addAnimal(Animal animal) {
         animalsList.add(animal);
+        LinkedList<Animal> animalsOnField = animalsHashMap.get(animal.getPosition());
+
+        if(animalsOnField == null){
+            LinkedList<Animal> newAnimalsOnFieldList = new LinkedList<>();
+            newAnimalsOnFieldList.add(animal);
+            animalsHashMap.put(animal.getPosition(),newAnimalsOnFieldList);
+        } else {
+            animalsOnField.add(animal);
+        }
 
     }
 
-    public void addPlantInsideJungle(int energyFromEatingPlant) {
-        Optional<Vector2d> optionalNewPlantPosition = getPlantlessJungleField();
-        if(optionalNewPlantPosition.isEmpty()) return;
+    public void spawnPlantsInsideJungle(int plantsNumber, int energyFromEatingPlant) {
 
-        Vector2d newPlantPosition = optionalNewPlantPosition.get();
-        plantsInsideJungleList.add(new Plant(newPlantPosition, energyFromEatingPlant));
-
+        for (int i = 0; i < plantsNumber; i++) {
+            spawnPlant(new LinkedList<>(plantlessJungleFieldList),energyFromEatingPlant);
+        }
 
     }
 
-    private Optional<Vector2d> getPlantlessJungleField() {
-        if (plantsInsideJungleList.size() >= jungleDimensions.toAreaOfRectangle()) return Optional.empty();
+    public void spawnPlantsOutsideJungle(int plantsNumber, int energyFromEatingPlant) {
 
-        LinkedList<Vector2d> plantsPositions = plantsInsideJungleList.stream().map(Plant::getPosition).collect(Collectors.toCollection(LinkedList::new));
-        Vector2d jungleField = Vector2d.getRandomVector(jungleLowerLeftCorner, jungleUpperRightCorner);
-        while (plantsPositions.contains(jungleField))
-            jungleField = jungleField.getLinearNextInRectangle(jungleLowerLeftCorner, jungleUpperRightCorner);
-        return Optional.of(jungleField);
+        for (int i = 0; i < plantsNumber; i++) {
+            spawnPlant(new LinkedList<>(plantlessSteppeFieldList),energyFromEatingPlant);
+        }
 
     }
 
+    private void spawnPlant(LinkedList<Vector2d> positionCandidates, int energyFromEatingPlant) {
 
+        Vector2d position = null;
+        for(Vector2d positionCandidate : positionCandidates){
+            if(animalsHashMap.containsKey(positionCandidate))continue;
 
-    public void addPlantOutsideJungle(int energyFromEatingPlant) {
-        Optional<Vector2d> optionalNewPlantPosition = getPlantlessJungleField();
-        //if(optionalNewPlantPosition.isEmpty()) return;
+            position = positionCandidate;
+            break;
+        }
+
+        if(position == null) return;
+
+        plantsList.add(new Plant(position,energyFromEatingPlant));
+
+        if(isInJungle(position)){
+            plantlessJungleFieldList.remove(position);
+        }else{
+            plantlessSteppeFieldList.remove(position);
+        }
 
 
     }
-
-    private Optional<Vector2d> getPlantlessSteppeField() {
-        if (plantsOutsideJungleList.size() == mapDimensions.toAreaOfRectangle() - jungleDimensions.toAreaOfRectangle())
-            return Optional.empty();
-
-
-        LinkedList<Vector2d> plantsPositions = plantsOutsideJungleList.stream().map(Plant::getPosition).collect(Collectors.toCollection(LinkedList::new));
-        Vector2d steppeField = Vector2d.getRandomVector(new Vector2d(0,0), mapDimensions);
-
-        do{
-            steppeField = steppeField.getLinearNextInRectangle(jungleLowerLeftCorner, jungleUpperRightCorner);
-        }while (plantsPositions.contains(steppeField));
-
-        return Optional.of(steppeField);
-
-    }
-
 
     public void moveAnimals() {
         animalsList.forEach(Animal::move);
@@ -143,36 +180,54 @@ public class WorldMap {
     }
 
     public void eatPlants() {
+        LinkedList<Plant> copyOfPlantsList = new LinkedList<>(plantsList);
 
-        eatPlantsIn(plantsInsideJungleList);
-        eatPlantsIn(plantsOutsideJungleList);
+        for(Plant plant: copyOfPlantsList){
+            if(!animalsHashMap.containsKey(plant.getPosition())) continue;
 
-    }
+            LinkedList<Animal> animalsOnField = animalsHashMap.get(plant.getPosition());
+            LinkedList<Animal> animalsWithGreatestEnergy = getAnimalsWithGreatestEnergy(animalsOnField);
+            int energyPerAnimal = plant.getNutritionalValue() / animalsWithGreatestEnergy.size();
+            for (Animal animal : animalsWithGreatestEnergy){
+                animal.eat(energyPerAnimal);
+            }
 
-    private void eatPlantsIn(LinkedList<Plant> plantsList) {
-        ListIterator<Plant> iterator = plantsList.listIterator();
-        while (iterator.hasNext()) {
-            Plant plant = iterator.next();
-            if (animalsHashMap.get(plant.position) == null) continue;
+            if(isInJungle(plant.getPosition())){
+                plantlessJungleFieldList.add(plant.getPosition());
+            }else{
+                plantlessSteppeFieldList.add(plant.getPosition());
+            }
 
-            Animal animal = Collections.max(animalsHashMap.get(plant.position), Comparator.comparingInt(Animal::getEnergy));
-            animal.eat(plant.energy);
-            iterator.remove();
+            plantsList.remove(plant);
         }
     }
 
+    private LinkedList<Animal> getAnimalsWithGreatestEnergy(LinkedList<Animal> animals){
+        Optional<Animal> optionalOfAnimalWithGreatestEnergy = animals.stream().max(Comparator.comparingInt(Animal::getEnergy));
+        if(optionalOfAnimalWithGreatestEnergy.isEmpty()) {
+            throw new IllegalArgumentException("animals can't be an empty list");
+        }
+
+        Animal animalWithGreatestEnergy = optionalOfAnimalWithGreatestEnergy.get();
+        return animals.stream()
+                .filter( animal -> animal.getEnergy() == animalWithGreatestEnergy.getEnergy())
+                .collect(Collectors.toCollection(LinkedList::new));
+
+    }
+
+
     public void reproduceAnimals(int minEnergyForReproduction) {
-        for (LinkedList<Animal> animalsOnField : animalsHashMap.values()) {
-            Optional<Animal> newAnimalOptional = animalsOnField.stream()
+        HashMap<Vector2d,LinkedList<Animal>> copyOfAnimalsHashMap = new HashMap<>(animalsHashMap);
+        for (LinkedList<Animal> animalsOnField : copyOfAnimalsHashMap.values()) {
+            LinkedList<Animal> parents = animalsOnField.stream()
                     .filter(animal -> animal.getEnergy() >= minEnergyForReproduction)
                     .sorted(Comparator.comparingInt(Animal::getEnergy).reversed())
                     .limit(2)
-                    .reduce(Animal::reproduce);
+                    .collect(Collectors.toCollection(LinkedList::new));
 
-            if (newAnimalOptional.isEmpty()) continue;
+            if (parents.size() < 2) continue;
 
-            animalsList.add(newAnimalOptional.get());
-
+            addAnimal(parents.get(0).reproduce(parents.get(1)));
         }
 
     }

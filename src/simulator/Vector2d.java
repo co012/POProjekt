@@ -6,6 +6,8 @@ public class Vector2d {
     public final int x;
     public final int y;
 
+    public final static Vector2d ZERO = new Vector2d(0, 0);
+
     public Vector2d(int x, int y) {
         this.x = x;
         this.y = y;
@@ -26,21 +28,8 @@ public class Vector2d {
         return new Vector2d(x, y);
     }
 
-    public static Vector2d getRandomVectorInsideRecWithoutRec(Vector2d from1,Vector2d to1,Vector2d from2, Vector2d to2){
-        LinkedList<SquareParts> existingParts = SquareParts.getExistingParts(from1,to1,from2,to2);
-        existingParts.remove(SquareParts.CENTER);
-        Collections.shuffle(existingParts);
-        SquareParts squarePart = existingParts.peek();
-        return null;
 
-
-
-
-    }
-
-
-
-    public int toAreaOfRectangle(){
+    public int toAreaOfRectangle() {
         return this.x * this.y;
     }
 
@@ -77,16 +66,20 @@ public class Vector2d {
         return add(that.opposite());
     }
 
-    public Vector2d modulo(Vector2d that) {
-        return new Vector2d(this.x % that.x, this.y % that.y);
+    public Vector2d moduloPositive(Vector2d that) {
+        int newX = this.x % that.x;
+        int newY = this.y % that.y;
+        if (newX < 0) newX += that.x;
+        if (newY < 0) newY += that.y;
+        return new Vector2d(newX, newY);
     }
 
-    public Vector2d xModulo(int m){
-        return new Vector2d(x%m,y);
+    public Vector2d xModulo(int m) {
+        return new Vector2d(x % m, y);
     }
 
-    public Vector2d yModulo(int m){
-        return new Vector2d(x,y%m);
+    public Vector2d yModulo(int m) {
+        return new Vector2d(x, y % m);
     }
 
     public int toScalar(int n) {
@@ -102,7 +95,7 @@ public class Vector2d {
         return fromScalar(this.toScalar(n) + 1, n);
     }
 
-    public Vector2d getLinearNextInRectangle(Vector2d lowerLeft, Vector2d upperRight){
+    public Vector2d getLinearNextInRectangle(Vector2d lowerLeft, Vector2d upperRight) {
         Vector2d recTranslatedTo0 = upperRight.subtract(lowerLeft);
         Vector2d thisTranslated = this.subtract(lowerLeft);
         Vector2d translatedLinearNext = thisTranslated.getLinearNext(recTranslatedTo0.x);
@@ -111,7 +104,7 @@ public class Vector2d {
 
     }
 
-    public boolean isInsideRectangle(Vector2d lowerLeft, Vector2d upperRight){
+    public boolean isInsideRectangle(Vector2d lowerLeft, Vector2d upperRight) {
         boolean xIn = lowerLeft.x <= this.x && this.x < upperRight.x;
         boolean yIn = lowerLeft.y <= this.y && this.y < upperRight.y;
         return xIn && yIn;

@@ -3,16 +3,15 @@ package simulator;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 
-import java.util.LinkedList;
-
 public class Simulation extends Thread{
     private final SimulationProperties properties;
     private final StatisticSidebarController sidebarController;
     private final FollowAnimalController followAnimalController;
     private final Canvas mapCanvas;
     private final WorldMap map;
-    private boolean isPaused;
-    private boolean hasEnded;
+    private volatile boolean isPaused;
+    private volatile boolean hasEnded;
+    private int day;
 
     Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController sidebarController, FollowAnimalController followAnimalController){
         this.properties = properties;
@@ -20,6 +19,7 @@ public class Simulation extends Thread{
         this.followAnimalController = followAnimalController;
         this.mapCanvas = mapCanvas;
         this.map = prepareMap();
+        day = 0;
 
 
 
@@ -40,39 +40,29 @@ public class Simulation extends Thread{
         WorldMap map = new WorldMap(mapDimensions,jungleLowerLeftCorner,jungleUpperRightCorner);
 
 
-        for (int i = 0; i < properties.startAnimalsNumber; i++) {
-            Vector2d position = new Vector2d(properties.mapWidth/2,properties.mapHeight/2);
-            Animal animal = new Animal(map,position,properties.animalStartEnergy,properties.animalMoveEnergy);
-            map.addAnimal(animal);
-        }
-
-        for (int i = 0; i < properties.plantsPerDayInsideJungle; i++) {
-            map.addPlantInsideJungle(properties.energyFromPlant);
-        }
-        for (int i = 0; i < properties.plantsPerDayOutsideJungle; i++) {
-            map.addPlantOutsideJungle(properties.energyFromPlant);
-        }
+        map.spawnAnimals(properties.startAnimalsNumber,properties.animalStartEnergy,properties.animalMoveEnergy);
+        map.spawnPlantsInsideJungle(properties.plantsPerDayInsideJungle, properties.energyFromPlant);
+        map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
 
         return map;
     }
 
     public void simulateADay(){
+        day++;
         map.removeDeadAnimals();
         map.moveAnimals();
         map.eatPlants();
         map.reproduceAnimals(properties.minEnergyForReproduction);
+        map.spawnPlantsInsideJungle(properties.plantsPerDayInsideJungle, properties.energyFromPlant);
+        map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
 
-        for (int i = 0; i < properties.plantsPerDayInsideJungle; i++) {
-            map.addPlantInsideJungle(properties.energyFromPlant);
-        }
-        for (int i = 0; i < properties.plantsPerDayOutsideJungle; i++) {
-            map.addPlantOutsideJungle(properties.energyFromPlant);
-        }
 
     }
 
     public void displayCurrentState(){
         map.drawMap(mapCanvas);
+        sidebarController.addNewAnimalNumberOnDayData(map.getAnimalsNumber(), day);
+        sidebarController.addNewPlantsNumberOnDayData(map.getPlantsNumber(), day);
     }
 
     @Override
@@ -110,11 +100,12 @@ public class Simulation extends Thread{
     public void pause(){
         isPaused = true;
     }
-
     public void unPause(){
         isPaused = false;
     }
     public void end(){
         this.hasEnded = true;
     }
+
+
 }

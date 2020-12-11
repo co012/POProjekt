@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Animal implements IDrawableMapElement {
 
-    public Vector2d position;
+    private Vector2d position;
     private final int startEnergy;
     private int energy;
     private final int moveEnergy;
@@ -49,8 +49,7 @@ public class Animal implements IDrawableMapElement {
 
     public Animal reproduce(Animal that) {
         Genotype childGenotype = new Genotype(this.genotype, that.genotype);
-        Optional<Vector2d> neighbourEmptyField = map.getRandomNeighbourEmptyField(position);
-        Vector2d childPosition = neighbourEmptyField.orElse(map.getRandomNeighbourField(position));
+        Vector2d childPosition = map.getRandomNeighbourEmptyFieldIfPossible(position);
         int childEnergy = (that.energy + that.energy) / 4;
         this.energy = (int) (this.energy * 0.75);
         that.energy = (int) (that.energy * 0.75);
@@ -66,7 +65,7 @@ public class Animal implements IDrawableMapElement {
     public void draw(GraphicsContext graphicsContext, double xScale, double yScale) {
         double alpha = energy / (double)startEnergy * 0.5;
         alpha = Math.min(alpha,1);
-        alpha = Math.max(alpha,0);
+        alpha = Math.max(alpha,.1);
 
         graphicsContext.setFill(Color.web(ANIMAL_COLOR,alpha));
 
