@@ -3,14 +3,16 @@ package simulator;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 
-public class Simulation extends Thread {
+import java.util.LinkedList;
+import java.util.Optional;
+
+public class Simulation implements IPauseEventHandler,Runnable{
     private final SimulationProperties properties;
     private final StatisticSidebarController sidebarController;
     private final FollowAnimalController followAnimalController;
     private final Canvas mapCanvas;
     private final WorldMap map;
     private volatile boolean isPaused;
-    private volatile boolean hasEnded;
     private int day;
 
     Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController sidebarController, FollowAnimalController followAnimalController) {
@@ -21,6 +23,28 @@ public class Simulation extends Thread {
         this.map = prepareMap();
         day = 0;
 
+        mapCanvas.setOnMouseClicked(e ->{
+            if(!isPaused)return;
+
+            int x = (int) ((e.getX()/mapCanvas.getWidth()) * properties.mapWidth);
+            int y = (int) ((e.getY()/mapCanvas.getHeight()) * properties.mapHeight);
+            Vector2d field = new Vector2d(x,y);
+            onMapFieldClicked(field);
+
+        });
+
+        followAnimalController.setOnPauseEventHandler(this);
+
+        followAnimalController.setOnSelectMostPopularEventHandler(() -> {
+                map.selectAnimalsWithMostPopularGenotype();
+                map.drawMap(mapCanvas);
+        });
+
+    }
+
+    private void onMapFieldClicked(Vector2d field){
+        LinkedList<Animal> animalsOnField = map.getAnimalsOnField(field);
+        followAnimalController.viewAnimals(animalsOnField);
 
     }
 
@@ -46,71 +70,66 @@ public class Simulation extends Thread {
     }
 
     public void simulateADay() {
-        day++;
-        map.beginDay();
-        map.removeDeadAnimals();
-        map.moveAnimals();
-        map.eatPlants();
-        map.reproduceAnimals(properties.minEnergyForReproduction);
-        map.spawnPlantsInsideJungle(properties.plantsPerDayInsideJungle, properties.energyFromPlant);
-        map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
+        synchronized (map){
+            day++;
+            map.beginDay();
+            map.removeDeadAnimals();
+            map.moveAnimals();
+            map.eatPlants();
+            map.reproduceAnimals(properties.minEnergyForReproduction);
+            map.spawnPlantsInsideJungle(properties.plantsPerDayInsideJungle, properties.energyFromPlant);
+            map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
+        }
+
+
+
+    }
+
+    public void drawMap() {
+        synchronized (map){
+            map.drawMap(mapCanvas);
+        }
 
 
     }
 
-    public void displayCurrentState() {
-        map.drawMap(mapCanvas);
-        sidebarController.addNewAnimalNumberOnDayData(map.getAnimalsNumber(), day);
-        sidebarController.addNewPlantsNumberOnDayData(map.getPlantsNumber(), day);
-        sidebarController.addNewAvgEnergyOnDayData(map.getAvgEnergy(), day);
-        sidebarController.addNewBirthRateOnDayData(map.getAvgChildrenNumber(), day);
-        sidebarController.addNewLifeExpectancyOnDayData(map.getLifeExpectancy(), day);
-        sidebarController.setMostPopularGenotype(map.getMostPopularGenotype());
-    }
+    public void updateStatistics(){
+        synchronized (map){
+            sidebarController.addNewAnimalNumberOnDayData(map.getAnimalsNumber(), day);
+            sidebarController.addNewPlantsNumberOnDayData(map.getPlantsNumber(), day);
+            sidebarController.addNewAvgEnergyOnDayData(map.getAvgEnergy(), day);
+            sidebarController.addNewBirthRateOnDayData(map.getAvgChildrenNumber(), day);
+            sidebarController.addNewLifeExpectancyOnDayData(map.getLifeExpectancy(), day);
+            Optional<Genotype> genotypeOptional = map.getMostPopularGenotype();
+            genotypeOptional.ifPresent(sidebarController::setMostPopularGenotype);
+            followAnimalController.updateFollowStatistics(day);
+        }
 
-    @Override
-    public synchronized void start() {
-        Platform.runLater(this::displayCurrentState);
-        isPaused = false;
-        hasEnded = false;
-        super.start();
 
     }
+
+
 
     @Override
     public void run() {
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        Platform.runLater(this::drawMap);
+        if (!isPaused){
+            simulateADay();
+            Platform.runLater(this::updateStatistics);
         }
-        while (!isInterrupted() && !hasEnded) {
-            if (!isPaused) simulateADay();
-            Platform.runLater(this::displayCurrentState);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
-    }
 
-    public void pause() {
+    public void onPause() {
         isPaused = true;
     }
 
-    public void unPause() {
+    public void onUnPause() {
         isPaused = false;
+        map.unSelectAllAnimals();
     }
 
-    public void end() {
-        this.hasEnded = true;
-    }
 
 
 }

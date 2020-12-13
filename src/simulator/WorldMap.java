@@ -15,14 +15,15 @@ public class WorldMap {
     private final Vector2d jungleLowerLeftCorner;
     private final Vector2d jungleUpperRightCorner;
     private final Vector2d jungleDimensions;
-    private final LinkedList<Animal> animalsList;
-    private final LinkedList<Plant> plantsList;
-    private final LinkedList<Vector2d> plantlessJungleFieldList;
-    private final LinkedList<Vector2d> plantlessSteppeFieldList;
+    private final List<Animal> animalsList;
+    private final List<Plant> plantsList;
+    private final List<Vector2d> plantlessJungleFieldList;
+    private final List<Vector2d> plantlessSteppeFieldList;
     private HashMap<Vector2d, LinkedList<Animal>> animalsHashMap;
 
     private int todayChildrenNumber;
-    private double recentLifeExpectancy;
+    private double deadAnimalsNumber;
+    private double sumOfDeadAnimalsAge;
 
 
     public WorldMap(Vector2d mapDimensions, Vector2d jungleLowerLeftCorner, Vector2d jungleUpperRightCorner) {
@@ -30,8 +31,8 @@ public class WorldMap {
         this.jungleLowerLeftCorner = jungleLowerLeftCorner;
         this.jungleUpperRightCorner = jungleUpperRightCorner;
         this.jungleDimensions = jungleUpperRightCorner.subtract(jungleLowerLeftCorner);
-        animalsList = new LinkedList<>();
-        plantsList = new LinkedList<>();
+        animalsList = Collections.synchronizedList( new LinkedList<>());
+        plantsList = Collections.synchronizedList( new LinkedList<>());
         animalsHashMap = new HashMap<>();
 
         plantlessJungleFieldList = new LinkedList<>();
@@ -53,7 +54,6 @@ public class WorldMap {
         Collections.shuffle(plantlessSteppeFieldList);
 
         todayChildrenNumber = 0;
-        recentLifeExpectancy = 0;
 
     }
 
@@ -246,19 +246,21 @@ public class WorldMap {
     }
 
     public void removeDeadAnimals() {
-        //TODO:Should I prioritise making animalList final
         LinkedList<Animal> deadAnimalsList = animalsList.stream()
                 .filter(Animal::isDead)
                 .collect(Collectors.toCollection(LinkedList::new));
 
         if (deadAnimalsList.isEmpty()) return;
 
+        deadAnimalsList.forEach(Animal::onDie);
+
         double ageSum = deadAnimalsList
                 .stream()
                 .mapToDouble(Animal::getAge)
                 .sum();
 
-        recentLifeExpectancy = ageSum / deadAnimalsList.size();
+        deadAnimalsNumber += deadAnimalsList.size();
+        sumOfDeadAnimalsAge += ageSum;
 
         animalsList.removeAll(deadAnimalsList);
     }
@@ -267,32 +269,51 @@ public class WorldMap {
         return field.isInsideRectangle(jungleLowerLeftCorner, jungleUpperRightCorner);
     }
 
-    public int getAvgEnergy() {
+    public double getAvgEnergy() {
         int energySum = animalsList
                 .stream()
                 .mapToInt(Animal::getEnergy)
                 .sum();
-        return energySum / animalsList.size();
+        return energySum / (double)animalsList.size();
     }
 
     public double getLifeExpectancy() {
-        return recentLifeExpectancy;
+        return deadAnimalsNumber == 0 ? 0 : sumOfDeadAnimalsAge/deadAnimalsNumber;
     }
 
     public double getAvgChildrenNumber() {
         return todayChildrenNumber / (double) animalsList.size();
     }
 
-    public int[] getMostPopularGenotype(){
+    public Optional<Genotype> getMostPopularGenotype(){
 
-        Optional<Map.Entry<int[],Long>> genotypeAndFrequency = animalsList.stream()
-                .map(Animal::getGeneFrequency)
+
+
+        Optional<Map.Entry<Genotype,Long>> genotypeAndFrequency = animalsList.stream()
+                .map(Animal::getGenotype)
                 .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
                 .entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue());
 
-        if(genotypeAndFrequency.isEmpty()) return new int[Genotype.GENS_TYPES_NUMBER];
-        else return genotypeAndFrequency.get().getKey();
+        if(genotypeAndFrequency.isEmpty()) return  Optional.empty();
+        else return Optional.of(genotypeAndFrequency.get().getKey());
+    }
+
+    public LinkedList<Animal> getAnimalsOnField(Vector2d field){
+        return animalsHashMap.containsKey(field) ? animalsHashMap.get(field) : new LinkedList<>();
+    }
+
+    public void selectAnimalsWithMostPopularGenotype(){
+        Optional<Genotype> genotypeOptional = getMostPopularGenotype();
+        if(genotypeOptional.isEmpty())return;
+        Genotype mostPopularGenotype = genotypeOptional.get();
+        animalsList.stream()
+                .filter(animal -> animal.getGenotype().equals(mostPopularGenotype))
+                .forEach(animal -> animal.selectAnimal(Animal.SELECTED_MOST_POPULAR_ANIMAL_COLOR));
+    }
+
+    public void unSelectAllAnimals(){
+        animalsList.forEach(Animal::unSelectAnimal);
     }
 }

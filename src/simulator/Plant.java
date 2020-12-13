@@ -3,7 +3,7 @@ package simulator;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Plant implements IDrawableMapElement {
+public class Plant implements IDrawableWorldMapElement {
     private final int nutritionalValue;
     private final Vector2d position;
     private final static String PLANT_COLOR = "#119999";

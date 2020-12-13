@@ -24,6 +24,14 @@
         </yAxis>
       </LineChart>
       <Separator prefWidth="200.0" />
+      <LineChart fx:id="thirdStatisticsLineChart">
+        <xAxis>
+          <CategoryAxis label="Days" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </LineChart>
       <BarChart fx:id="mostPopularGenotypeBarChart" barGap="1.0" categoryGap="3.0" prefHeight="200.0" title="Most popular genotype">
         <xAxis>
           <CategoryAxis side="BOTTOM" />

@@ -8,10 +8,14 @@ import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SimulationsManager {
     private final SimulationProperties simulationProperties;
     private final LinkedList<Simulation> simulations;
+    private ScheduledExecutorService scheduler;
 
 
 
@@ -47,11 +51,13 @@ public class SimulationsManager {
     }
 
     public void startSimulations(){
-        simulations.forEach(Simulation::start);
+        scheduler = Executors.newScheduledThreadPool(simulations.size());
+        simulations.forEach(simulation -> scheduler.scheduleWithFixedDelay(simulation,10,10, TimeUnit.MILLISECONDS));
     }
 
     public void stopSimulations(){
-        simulations.forEach(Simulation::end);
+        scheduler.shutdown();
+
     }
 
 }

@@ -7,59 +7,90 @@
 
 <VBox alignment="TOP_CENTER" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.FollowAnimalController">
    <children>
-      <BarChart fx:id="followAnimalGenotypeBarChart" barGap="2.0" prefHeight="200.0" title="Genotype">
+      <BarChart fx:id="currentViewedAnimalGenotypeBarChart" barGap="1.0" categoryGap="3.0" prefHeight="200.0" title="Genotype">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis autoRanging="false" minorTickCount="4" minorTickLength="3.0" side="LEFT" tickUnit="4.0" upperBound="32.0" />
+            <NumberAxis autoRanging="false" maxHeight="-Infinity" minHeight="-Infinity" minorTickCount="1" minorTickLength="1.0" prefHeight="100.0" side="LEFT" tickLabelGap="1.0" tickLength="5.0" tickUnit="4.0" upperBound="32.0" />
         </yAxis>
       </BarChart>
-      <VBox fx:id="controlsVBox" alignment="TOP_CENTER">
+      <VBox fx:id="controlsVBox" alignment="TOP_CENTER" disable="true">
          <children>
             <HBox alignment="CENTER" prefWidth="200.0">
                <children>
-                  <Button fx:id="previousButton" mnemonicParsing="false" text="&lt;" />
+                  <Button fx:id="previousButton" mnemonicParsing="false" onMouseClicked="#onPreviousButtonClicked" text="&lt;" />
                   <Label fx:id="displayedAnimalFromFieldLabel" text="0/0">
                      <HBox.margin>
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <Button fx:id="nextButton" mnemonicParsing="false" text="&gt;" />
+                  <Button fx:id="nextButton" mnemonicParsing="false" onMouseClicked="#onNextButtonClicked" text="&gt;" />
                </children>
                <padding>
                   <Insets bottom="5.0" top="5.0" />
                </padding>
             </HBox>
-            <Button fx:id="followButton" mnemonicParsing="false" text="Follow" />
+            <Button fx:id="followButton" mnemonicParsing="false" onAction="#onFollowButtonClicked" text="Follow" />
          </children>
       </VBox>
-      <GridPane>
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="157.0" minWidth="10.0" prefWidth="138.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="62.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <VBox fx:id="followedAnimalInfoVBox" disable="true">
          <children>
-            <Label text="Number of children:" />
-            <Label text="Number of descendants:" GridPane.rowIndex="1" />
-            <Label text="Day of death:" GridPane.rowIndex="2" />
-            <Label fx:id="numberOfChildrenLabel" text="0" GridPane.columnIndex="1" />
-            <Label fx:id="numberOfDescendantsLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="dayOfDeathLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <GridPane prefWidth="200.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="133.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="62.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="40.0" minHeight="9.0" prefHeight="40.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Number of children on n-th day :" wrapText="true" />
+                  <Label text="Number of descendants on n-th day:" wrapText="true" GridPane.rowIndex="1" />
+                  <Label fx:id="numberOfChildrenLabel" text="0" GridPane.columnIndex="1" />
+                  <Label fx:id="numberOfDescendantsLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </GridPane>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label text="n = " />
+                  <!--NumberField fx:id="nInputField" onAction="#onNInput" prefWidth="100.0" promptText="Day" />-->
+                  <Button mnemonicParsing="false" onAction="#onNInput" text="OK" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" />
+               </padding>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label text="Day of death: " />
+                  <Label fx:id="dayOfDeathLabel" text="N/A" />
+               </children>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </HBox>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <padding>
-            <Insets left="5.0" />
-         </padding>
-      </GridPane>
-      <Button fx:id="pauseButton" mnemonicParsing="false" text="Pause">
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </VBox>
+      <Separator prefWidth="200.0" />
+      <Button fx:id="selectMostPopularButton" accessibleText="Select animals with most popular genotype " disable="true" mnemonicParsing="false" onAction="#onSelectMostPopular" text="Select most popular">
+         <VBox.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </VBox.margin>
+          <tooltip><Tooltip text="Select animals with most popular genotype " /></tooltip>
+      </Button>
+      <Separator prefWidth="200.0" />
+      <Button fx:id="pauseButton" mnemonicParsing="false" onMouseClicked="#onPauseButtonClicked" text="Pause">
          <VBox.margin>
             <Insets bottom="10.0" top="20.0" />
          </VBox.margin>

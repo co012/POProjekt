@@ -122,6 +122,7 @@ public class AppController {
     @FXML
     private void onStartButtonClicked(){
         if(startButton.isDisabled())return;
+        if(simulationsManager!= null) simulationsManager.stopSimulations();
 
         contentSplitPane.getItems().clear();
         simulationsManager = new SimulationsManager(simulationProperties);

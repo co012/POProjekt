@@ -9,10 +9,11 @@ import javafx.scene.chart.XYChart;
 public class StatisticSidebarController {
     @FXML private LineChart<String,Integer> firstStatisticsLineChart;
     @FXML private LineChart<String,Double> secondStatisticsLineChart;
+    @FXML private LineChart<String,Double> thirdStatisticsLineChart;
     @FXML private BarChart<String,Integer> mostPopularGenotypeBarChart;
     private final XYChart.Series<String,Integer> animalsNumberSeries;
     private final XYChart.Series<String,Integer> plantsNumberSeries;
-    private final XYChart.Series<String,Integer> avgEnergySeries;
+    private final XYChart.Series<String,Double> avgEnergySeries;
     private final XYChart.Series<String,Double> lifeExpectancySeries;
     private final XYChart.Series<String,Double> birthRateSeries;
     private final XYChart.Series<String, Integer> mostPopularGenotypeSeries;
@@ -44,9 +45,11 @@ public class StatisticSidebarController {
         firstStatisticsLineChart.getData().add(animalsNumberSeries);
         firstStatisticsLineChart.getData().add(plantsNumberSeries);
 
-        firstStatisticsLineChart.getData().add(avgEnergySeries);
-        secondStatisticsLineChart.getData().add(lifeExpectancySeries);
         secondStatisticsLineChart.getData().add(birthRateSeries);
+
+        thirdStatisticsLineChart.getData().add(avgEnergySeries);
+        thirdStatisticsLineChart.getData().add(lifeExpectancySeries);
+
 
     }
 
@@ -58,7 +61,7 @@ public class StatisticSidebarController {
         plantsNumberSeries.getData().add(new XYChart.Data<>(String.valueOf(day),plantsNumber));
     }
 
-    public void addNewAvgEnergyOnDayData(int avgEnergy, int day){
+    public void addNewAvgEnergyOnDayData(double avgEnergy, int day){
         avgEnergySeries.getData().add(new XYChart.Data<>(String.valueOf(day),avgEnergy));
     }
 
@@ -70,10 +73,11 @@ public class StatisticSidebarController {
         birthRateSeries.getData().add(new XYChart.Data<>(String.valueOf(day),birtRate));
     }
 
-    public void setMostPopularGenotype(int[] genotype){
+    public void setMostPopularGenotype(Genotype genotype){
+        int[] genotype_array = genotype.getGeneFrequencyArray();
         mostPopularGenotypeSeries.getData().forEach( data -> {
             int i = Integer.parseInt(data.getXValue());
-            data.setYValue(genotype[i]);
+            data.setYValue(genotype_array[i]);
         });
     }
 
