@@ -10,7 +10,6 @@
            <Menu mnemonicParsing="false" text="Load">
                <MenuItem mnemonicParsing="false" onAction="#onLoadFromFileClicked" text="Load from file" />
                <MenuItem mnemonicParsing="false" onAction="#onLoadDirectlyClicked" text="Load directly" />
-               <MenuItem mnemonicParsing="false" text="Surprise me" />
            </Menu>
            <Menu mnemonicParsing="false" text="Options">
                <CheckMenuItem fx:id="runTwoMapsCheckbox" mnemonicParsing="false" text="Make two maps" />

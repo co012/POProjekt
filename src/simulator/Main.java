@@ -13,6 +13,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println("start");
         FXMLLoader loader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/app.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("Evolution Simulation");

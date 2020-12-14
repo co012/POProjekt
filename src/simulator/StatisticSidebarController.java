@@ -1,12 +1,16 @@
 package simulator;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 
 public class StatisticSidebarController {
+    private final static int MAX_DATA_LENGTH = 100;
+
     @FXML private LineChart<String,Integer> firstStatisticsLineChart;
     @FXML private LineChart<String,Double> secondStatisticsLineChart;
     @FXML private LineChart<String,Double> thirdStatisticsLineChart;
@@ -17,6 +21,7 @@ public class StatisticSidebarController {
     private final XYChart.Series<String,Double> lifeExpectancySeries;
     private final XYChart.Series<String,Double> birthRateSeries;
     private final XYChart.Series<String, Integer> mostPopularGenotypeSeries;
+
 
 
 
@@ -54,23 +59,38 @@ public class StatisticSidebarController {
     }
 
     public void addNewAnimalNumberOnDayData(int animalsNumber,int day){
-        animalsNumberSeries.getData().add(new XYChart.Data<>(String.valueOf(day),animalsNumber));
+        addIntegerDataItem(animalsNumberSeries.getData(),String.valueOf(day),animalsNumber);
+
     }
 
     public void addNewPlantsNumberOnDayData(int plantsNumber, int day){
-        plantsNumberSeries.getData().add(new XYChart.Data<>(String.valueOf(day),plantsNumber));
+        addIntegerDataItem(plantsNumberSeries.getData(),String.valueOf(day),plantsNumber);
     }
 
     public void addNewAvgEnergyOnDayData(double avgEnergy, int day){
-        avgEnergySeries.getData().add(new XYChart.Data<>(String.valueOf(day),avgEnergy));
+        addDoubleDataItem(avgEnergySeries.getData(), String.valueOf(day),avgEnergy);
     }
 
     public void addNewLifeExpectancyOnDayData(double liveExpectancy, int day){
-        lifeExpectancySeries.getData().add(new XYChart.Data<>(String.valueOf(day),liveExpectancy));
+        addDoubleDataItem(lifeExpectancySeries.getData(), String.valueOf(day),liveExpectancy);
     }
 
     public void addNewBirthRateOnDayData(double birtRate, int day){
-        birthRateSeries.getData().add(new XYChart.Data<>(String.valueOf(day),birtRate));
+        addDoubleDataItem(birthRateSeries.getData(), String.valueOf(day),birtRate);
+    }
+
+    private void addIntegerDataItem(ObservableList<XYChart.Data<String,Integer>> dataList,String category,Integer number){
+        dataList.add(new XYChart.Data<>(category,number));
+        if(dataList.size() > MAX_DATA_LENGTH){
+            dataList.remove(0);
+        }
+    }
+
+    private void addDoubleDataItem(ObservableList<XYChart.Data<String,Double>> dataList,String category,Double number){
+        dataList.add(new XYChart.Data<>(category,number));
+        if(dataList.size() > MAX_DATA_LENGTH){
+            dataList.remove(0);
+        }
     }
 
     public void setMostPopularGenotype(Genotype genotype){

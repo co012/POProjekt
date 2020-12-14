@@ -4,7 +4,7 @@
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
+<?import simulator.NumberField ?>
 <VBox alignment="TOP_CENTER" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.FollowAnimalController">
    <children>
       <BarChart fx:id="currentViewedAnimalGenotypeBarChart" barGap="1.0" categoryGap="3.0" prefHeight="200.0" title="Genotype">
@@ -61,7 +61,7 @@
             <HBox alignment="CENTER_LEFT">
                <children>
                   <Label text="n = " />
-                  <!--NumberField fx:id="nInputField" onAction="#onNInput" prefWidth="100.0" promptText="Day" />-->
+                  <NumberField fx:id="nInputField" onAction="#onNInput" prefWidth="100.0" promptText="Day" />
                   <Button mnemonicParsing="false" onAction="#onNInput" text="OK" />
                </children>
                <padding>

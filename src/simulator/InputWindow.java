@@ -36,7 +36,7 @@ public class InputWindow extends Stage {
         loader.load();
         this.setTitle("Enter evolution simulation parameters");
         this.setAlwaysOnTop(true);
-        this.setScene(new Scene(loader.getRoot(),400,355));
+        this.setScene(new Scene(loader.getRoot(),400,400));
         
 
 
