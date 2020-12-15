@@ -1,7 +1,10 @@
-package simulator;
+package simulator.map;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import simulator.*;
+import simulator.right_sidebar.FollowedAnimalStatisticsObserver;
+import simulator.right_sidebar.IFollowedAnimalStatisticsObserverRunnable;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -17,15 +20,12 @@ public class Animal implements IDrawableWorldMapElement {
     private final WorldMap map;
     private final Genotype genotype;
     private final static String ANIMAL_COLOR = "#A0522D";
-    public final static String SELECTED_MOST_POPULAR_ANIMAL_COLOR = "#FFFFFF";
+    public final static String SELECTED_MOST_POPULAR_ANIMAL_COLOR = "#3cff00";
     public final static String FOLLOWED_ANIMAL_COLOR = "#10109F";
     private String color;
 
     private final LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> lifeObservers;
     private final LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> descendantsObservers;
-
-
-
 
 
     public Animal(WorldMap map, Vector2d position, int startEnergy, int moveEnergy) {
@@ -34,7 +34,7 @@ public class Animal implements IDrawableWorldMapElement {
 
 
     public Animal(WorldMap map, Vector2d position, int startEnergy, int moveEnergy, Genotype genotype) {
-        if(position == null) throw new  IllegalArgumentException("position can't be null");
+        if (position == null) throw new IllegalArgumentException("position can't be null");
         this.position = position;
         this.map = map;
         this.energy = startEnergy;
@@ -63,7 +63,7 @@ public class Animal implements IDrawableWorldMapElement {
 
     }
 
-    public void beginDay(){
+    public void beginDay() {
         age++;
     }
 
@@ -86,87 +86,90 @@ public class Animal implements IDrawableWorldMapElement {
             followedAnimalStatisticsObserver.onChildBorn();
         });
 
-        executeOnWeakReferenceList(descendantsObservers,followedAnimalStatisticsObserver -> {
+        executeOnWeakReferenceList(descendantsObservers, followedAnimalStatisticsObserver -> {
             child.registerDescendantsObserver(followedAnimalStatisticsObserver);
             followedAnimalStatisticsObserver.onDescendantBorn();
         });
 
     }
 
-    public void eat(int energyFromFood){
-        this.energy+=energyFromFood;
+    public void eat(int energyFromFood) {
+        this.energy += energyFromFood;
     }
 
 
     @Override
     public void draw(GraphicsContext graphicsContext, double xScale, double yScale) {
-        double alpha = energy / (double)startEnergy * 0.5;
-        alpha = Math.min(alpha,1);
-        alpha = Math.max(alpha,.1);
+        double alpha = energy / (double) startEnergy * 0.5;
+        alpha = Math.min(alpha, 1);
+        alpha = Math.max(alpha, .1);
 
-        graphicsContext.setFill(Color.web(color,alpha));
+        graphicsContext.setFill(Color.web(color, alpha));
 
         double x = position.x * xScale;
         double y = position.y * yScale;
-        graphicsContext.fillRect(x,y,xScale,yScale);
+        graphicsContext.fillRect(x, y, xScale, yScale);
     }
 
-    public boolean isDead(){
+    public boolean isDead() {
         return energy <= 0;
     }
 
-    public void registerFollowAnimalObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver){
+    public void registerFollowAnimalObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver) {
         lifeObservers.add(new WeakReference<>(followedAnimalStatisticsObserver));
         registerDescendantsObserver(followedAnimalStatisticsObserver);
     }
 
 
-    private void registerDescendantsObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver){
+    private void registerDescendantsObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver) {
         descendantsObservers.add(new WeakReference<>(followedAnimalStatisticsObserver));
     }
 
 
-
-    public void onDie(){
-        executeOnWeakReferenceList(lifeObservers,FollowedAnimalStatisticsObserver::onFollowedAnimalDead);
+    public void onDie() {
+        executeOnWeakReferenceList(lifeObservers, FollowedAnimalStatisticsObserver::onFollowedAnimalDead);
     }
 
-    private void executeOnWeakReferenceList(LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> weakReferences, IFollowedAnimalStatisticsObserverRunnable runnable){
+    private void executeOnWeakReferenceList(LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> weakReferences, IFollowedAnimalStatisticsObserverRunnable runnable) {
         ListIterator<WeakReference<FollowedAnimalStatisticsObserver>> weakReferenceListIterator = weakReferences.listIterator();
-        while (weakReferenceListIterator.hasNext()){
+        while (weakReferenceListIterator.hasNext()) {
             WeakReference<FollowedAnimalStatisticsObserver> followedAnimalStatisticsObserverWeakReference = weakReferenceListIterator.next();
             FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver = followedAnimalStatisticsObserverWeakReference.get();
-            if(followedAnimalStatisticsObserver == null){
+            if (followedAnimalStatisticsObserver == null) {
                 weakReferenceListIterator.remove();
                 continue;
             }
             runnable.executeOn(followedAnimalStatisticsObserver);
         }
     }
-    private void removeNullReferencesFromList(LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> list){
-        executeOnWeakReferenceList(list,(e) -> {});
+
+    private void removeNullReferencesFromList(LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> list) {
+        executeOnWeakReferenceList(list, (e) -> {
+        });
     }
 
     public int getEnergy() {
         return energy;
     }
+
     public int getAge() {
         return age;
     }
-    public int[] getGeneFrequency(){
+
+    public int[] getGeneFrequency() {
         return genotype.getGeneFrequencyArray();
     }
 
-    public Genotype getGenotype(){
+    public Genotype getGenotype() {
         return genotype;
     }
 
-    public void unSelectAnimal(){
+    public void unSelectAnimal() {
         removeNullReferencesFromList(lifeObservers);
-        color = lifeObservers.isEmpty() ? ANIMAL_COLOR: FOLLOWED_ANIMAL_COLOR;
+        color = lifeObservers.isEmpty() ? ANIMAL_COLOR : FOLLOWED_ANIMAL_COLOR;
     }
 
-    public void selectAnimal(String selectionColor){
+    public void selectAnimal(String selectionColor) {
         color = selectionColor;
     }
 }

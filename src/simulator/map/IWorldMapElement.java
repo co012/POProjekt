@@ -1,4 +1,6 @@
-package simulator;
+package simulator.map;
+
+import simulator.Vector2d;
 
 public interface IWorldMapElement {
 

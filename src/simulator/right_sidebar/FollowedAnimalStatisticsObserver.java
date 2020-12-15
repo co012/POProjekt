@@ -1,17 +1,19 @@
-package simulator;
+package simulator.right_sidebar;
+
+import simulator.map.Animal;
 
 import java.util.HashMap;
 import java.util.Optional;
 
 public class FollowedAnimalStatisticsObserver {
-    private final HashMap<Integer,Integer> numberOfChildrenToDay;
-    private final HashMap<Integer,Integer> numberOfDescendantsToDay;
+    private final HashMap<Integer, Integer> numberOfChildrenToDay;
+    private final HashMap<Integer, Integer> numberOfDescendantsToDay;
     private int numberOfChildren;
     private int numberOfDescendants;
     private Integer dayOfDeath;
     private boolean isFollowedAnimalDead;
 
-    public FollowedAnimalStatisticsObserver(Animal followedAnimal){
+    public FollowedAnimalStatisticsObserver(Animal followedAnimal) {
         numberOfChildrenToDay = new HashMap<>();
         numberOfDescendantsToDay = new HashMap<>();
         numberOfChildren = 0;
@@ -37,23 +39,23 @@ public class FollowedAnimalStatisticsObserver {
         return numberOfDescendantsToDay.get(n);
     }
 
-    public void collectDataForDay(int day){
-        numberOfDescendantsToDay.put(day,numberOfDescendants);
-        numberOfChildrenToDay.put(day,numberOfChildren);
-        if(isFollowedAnimalDead && dayOfDeath == null){
+    public void collectDataForDay(int day) {
+        numberOfDescendantsToDay.put(day, numberOfDescendants);
+        numberOfChildrenToDay.put(day, numberOfChildren);
+        if (isFollowedAnimalDead && dayOfDeath == null) {
             dayOfDeath = day;
         }
     }
 
-    public void onChildBorn(){
+    public void onChildBorn() {
         numberOfChildren++;
     }
 
-    public void onDescendantBorn(){
+    public void onDescendantBorn() {
         numberOfDescendants++;
     }
 
-    public void onFollowedAnimalDead(){
+    public void onFollowedAnimalDead() {
         isFollowedAnimalDead = true;
     }
 

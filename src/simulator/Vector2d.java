@@ -74,16 +74,13 @@ public class Vector2d {
         return new Vector2d(newX, newY);
     }
 
-    public Vector2d xModulo(int m) {
-        return new Vector2d(x % m, y);
-    }
 
     public Vector2d yModulo(int m) {
         return new Vector2d(x, y % m);
     }
 
     public int toScalar(int n) {
-        if (x >= n) throw new IllegalArgumentException("n must be grater than n");
+        if (x >= n) throw new IllegalArgumentException("n must be grater than x");
         return n * y + x;
     }
 

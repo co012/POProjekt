@@ -2,49 +2,53 @@ package simulator;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
+import simulator.map.Animal;
+import simulator.map.WorldMap;
+import simulator.right_sidebar.InteractiveSidebarController;
+import simulator.right_sidebar.IPauseEventHandler;
+import simulator.statistics.StatisticSidebarController;
+import simulator.statistics.StatisticsPack;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
-public class Simulation implements IPauseEventHandler,Runnable{
+public class Simulation implements IPauseEventHandler, Runnable {
     private final SimulationProperties properties;
     private final StatisticSidebarController statisticSidebarController;
-    private final FollowAnimalController followAnimalController;
+    private final InteractiveSidebarController interactiveSidebarController;
     private final Canvas mapCanvas;
     private final WorldMap map;
     private volatile boolean isPaused;
 
 
-    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController statisticSidebarController, FollowAnimalController followAnimalController) {
+    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController statisticSidebarController, InteractiveSidebarController interactiveSidebarController) {
         this.properties = properties;
         this.statisticSidebarController = statisticSidebarController;
-        this.followAnimalController = followAnimalController;
+        this.interactiveSidebarController = interactiveSidebarController;
         this.mapCanvas = mapCanvas;
         this.map = prepareMap();
 
-        mapCanvas.setOnMouseClicked(e ->{
-            if(!isPaused)return;
+        mapCanvas.setOnMouseClicked(e -> {
+            if (!isPaused) return;
 
-            int x = (int) ((e.getX()/mapCanvas.getWidth()) * properties.mapWidth);
-            int y = (int) ((e.getY()/mapCanvas.getHeight()) * properties.mapHeight);
-            Vector2d field = new Vector2d(x,y);
+            int x = (int) ((e.getX() / mapCanvas.getWidth()) * properties.mapWidth);
+            int y = (int) ((e.getY() / mapCanvas.getHeight()) * properties.mapHeight);
+            Vector2d field = new Vector2d(x, y);
             onMapFieldClicked(field);
 
         });
 
-        followAnimalController.setOnPauseEventHandler(this);
+        interactiveSidebarController.setOnPauseEventHandler(this);
 
-        followAnimalController.setOnSelectMostPopularEventHandler(() -> {
-                map.selectAnimalsWithMostPopularGenotype();
-                map.drawMap(mapCanvas);
+        interactiveSidebarController.setOnSelectMostPopularEventHandler(() -> {
+            map.selectAnimalsWithMostPopularGenotype();
+            map.drawMap(mapCanvas);
         });
-
 
     }
 
-    private void onMapFieldClicked(Vector2d field){
+    private void onMapFieldClicked(Vector2d field) {
         LinkedList<Animal> animalsOnField = map.getAnimalsOnField(field);
-        followAnimalController.viewAnimals(animalsOnField);
+        interactiveSidebarController.viewAnimals(animalsOnField);
 
     }
 
@@ -70,7 +74,7 @@ public class Simulation implements IPauseEventHandler,Runnable{
     }
 
     public void simulateADay() {
-        synchronized (map){
+        synchronized (map) {
             map.beginDay();
             map.removeDeadAnimals();
             map.moveAnimals();
@@ -80,35 +84,29 @@ public class Simulation implements IPauseEventHandler,Runnable{
             map.spawnPlantsOutsideJungle(properties.plantsPerDayOutsideJungle, properties.energyFromPlant);
         }
 
-
-
     }
 
     public void drawMap() {
-        synchronized (map){
+        synchronized (map) {
             map.drawMap(mapCanvas);
         }
 
-
     }
 
-    public void updateStatistics(){
+    public void updateStatistics() {
         synchronized (map) {
             StatisticsPack statisticsPack = map.getStatisticPack();
             statisticSidebarController.addNewDataPack(statisticsPack);
-            followAnimalController.updateFollowStatistics(statisticsPack.day);
+            interactiveSidebarController.updateFollowStatistics(statisticsPack.day);
         }
 
-
-
     }
-
 
 
     @Override
     public void run() {
         Platform.runLater(this::drawMap);
-        if (!isPaused){
+        if (!isPaused) {
             simulateADay();
             Platform.runLater(this::updateStatistics);
         }
@@ -124,7 +122,5 @@ public class Simulation implements IPauseEventHandler,Runnable{
         isPaused = false;
         map.unSelectAllAnimals();
     }
-
-
 
 }

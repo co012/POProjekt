@@ -1,4 +1,4 @@
-package simulator;
+package simulator.input;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,12 +8,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import simulator.custom_controls.NumberField;
+import simulator.SimulationProperties;
 
 import java.io.IOException;
 
 public class InputWindow extends Stage {
 
-    @FXML NumberField mapWidthNumberField;
+    @FXML
+    NumberField mapWidthNumberField;
     @FXML NumberField mapHeightNumberField;
     @FXML NumberField startEnergyNumberField;
     @FXML NumberField moveEnergyNumberField;

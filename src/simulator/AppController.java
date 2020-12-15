@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.*;
+import simulator.input.InputWindow;
+import simulator.input.SimulationPropertiesLoader;
 
 
 import java.io.File;

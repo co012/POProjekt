@@ -1,4 +1,4 @@
-package simulator;
+package simulator.custom_controls;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;

@@ -1,4 +1,4 @@
-package simulator;
+package simulator.map;
 
 import javafx.scene.canvas.GraphicsContext;
 

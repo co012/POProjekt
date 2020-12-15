@@ -1,7 +1,6 @@
-package simulator;
+package simulator.input;
 
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
+import simulator.SimulationProperties;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -24,14 +23,12 @@ public class SimulationPropertiesLoader {
     private final static String PLANTS_PER_DAY_OUTSIDE_JUNGLE = "plantsPerDayOutsideJungle";
     private final static String MIN_ENERGY_FOR_REPRODUCTION = "minEnergyForReproduction";
 
-    public SimulationPropertiesLoader(){
+    public SimulationPropertiesLoader() {
 
     }
 
 
-//TODO: Use Optional
-    public SimulationProperties loadFromJsonFile(File file) throws FileNotFoundException,ClassCastException,NullPointerException {
-
+    public SimulationProperties loadFromJsonFile(File file) throws FileNotFoundException, ClassCastException, NullPointerException {
 
 
         JsonReader reader = Json.createReader(new FileInputStream(file));
@@ -40,7 +37,7 @@ public class SimulationPropertiesLoader {
         int mapWidth = jsonObject.getInt(MAP_WIDTH);
         int mapHeight = jsonObject.getInt(MAP_HEIGHT);
         int animalStartEnergy = jsonObject.getInt(START_ENERGY);
-        int animalMoveEnergy= jsonObject.getInt(MOVE_ENERGY);
+        int animalMoveEnergy = jsonObject.getInt(MOVE_ENERGY);
         int energyFromPlant = jsonObject.getInt(PLANT_ENERGY);
         int jungleWidth = jsonObject.getInt(JUNGLE_WIDTH);
         int jungleHeight = jsonObject.getInt(JUNGLE_HEIGHT);

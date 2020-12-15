@@ -1,4 +1,4 @@
-package simulator;
+package simulator.statistics;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -6,8 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import simulator.map.Genotype;
+import simulator.custom_controls.NumberField;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Objects;
 

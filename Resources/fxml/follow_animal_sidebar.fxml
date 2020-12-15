@@ -4,8 +4,8 @@
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import simulator.NumberField ?>
-<VBox alignment="TOP_CENTER" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.FollowAnimalController">
+<?import simulator.custom_controls.NumberField ?>
+<VBox alignment="TOP_CENTER" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.right_sidebar.InteractiveSidebarController">
    <children>
       <BarChart fx:id="currentViewedAnimalGenotypeBarChart" barGap="1.0" categoryGap="3.0" prefHeight="200.0" title="Genotype">
         <xAxis>

@@ -1,9 +1,11 @@
-package simulator;
+package simulator.map;
 
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import simulator.*;
+import simulator.statistics.StatisticsPack;
 
 import java.util.*;
 import java.util.function.Function;
@@ -32,8 +34,8 @@ public class WorldMap {
         this.jungleLowerLeftCorner = jungleLowerLeftCorner;
         this.jungleUpperRightCorner = jungleUpperRightCorner;
         this.jungleDimensions = jungleUpperRightCorner.subtract(jungleLowerLeftCorner);
-        this.animalsList = Collections.synchronizedList( new LinkedList<>());
-        this.plantsList = Collections.synchronizedList( new LinkedList<>());
+        this.animalsList = Collections.synchronizedList(new LinkedList<>());
+        this.plantsList = Collections.synchronizedList(new LinkedList<>());
         this.animalsHashMap = new HashMap<>();
         this.day = 0;
 
@@ -178,7 +180,7 @@ public class WorldMap {
 
     }
 
-    public void beginDay(){
+    public void beginDay() {
         day++;
         todayChildrenNumber = 0;
         animalsList.forEach(Animal::beginDay);
@@ -277,58 +279,54 @@ public class WorldMap {
                 .stream()
                 .mapToInt(Animal::getEnergy)
                 .sum();
-        return energySum / (double)animalsList.size();
+        return energySum / (double) animalsList.size();
     }
 
     public double getLifeExpectancy() {
-        return deadAnimalsNumber == 0 ? 0 : sumOfDeadAnimalsAge/deadAnimalsNumber;
+        return deadAnimalsNumber == 0 ? 0 : sumOfDeadAnimalsAge / deadAnimalsNumber;
     }
 
     public double getAvgChildrenNumber() {
         return todayChildrenNumber / (double) animalsList.size();
     }
 
-    public Map.Entry<Genotype,Long> getMostPopularGenotypeAndFrequency(){
+    public Map.Entry<Genotype, Long> getMostPopularGenotypeAndFrequency() {
 
 
-
-        Optional<Map.Entry<Genotype,Long>> genotypeAndFrequency = animalsList.stream()
+        Optional<Map.Entry<Genotype, Long>> genotypeAndFrequency = animalsList.stream()
                 .map(Animal::getGenotype)
-                .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue());
 
-        return genotypeAndFrequency.orElse(Map.entry(Genotype.EMPTY,0L));
+        return genotypeAndFrequency.orElse(Map.entry(Genotype.EMPTY, 0L));
     }
 
-    public LinkedList<Animal> getAnimalsOnField(Vector2d field){
+    public LinkedList<Animal> getAnimalsOnField(Vector2d field) {
         return animalsHashMap.containsKey(field) ? animalsHashMap.get(field) : new LinkedList<>();
     }
 
-    public void selectAnimalsWithMostPopularGenotype(){
-        Map.Entry<Genotype,Long> genotypeOptional = getMostPopularGenotypeAndFrequency();
+    public void selectAnimalsWithMostPopularGenotype() {
+        Map.Entry<Genotype, Long> genotypeOptional = getMostPopularGenotypeAndFrequency();
         Genotype mostPopularGenotype = genotypeOptional.getKey();
         animalsList.stream()
                 .filter(animal -> animal.getGenotype().equals(mostPopularGenotype))
                 .forEach(animal -> animal.selectAnimal(Animal.SELECTED_MOST_POPULAR_ANIMAL_COLOR));
     }
 
-    public void unSelectAllAnimals(){
+    public void unSelectAllAnimals() {
         animalsList.forEach(Animal::unSelectAnimal);
     }
 
-    public int getDay(){
-        return day;
-    }
 
-    public StatisticsPack getStatisticPack(){
+    public StatisticsPack getStatisticPack() {
         int animalsNumber = getAnimalsNumber();
         int plantsNumber = getPlantsNumber();
         double avgEnergy = getAvgEnergy();
         double avgChildrenNumber = getAvgChildrenNumber();
         double lifeExpectancy = getLifeExpectancy();
-        Map.Entry<Genotype,Long> mostPopularGenotypeAndFrequency = getMostPopularGenotypeAndFrequency();
+        Map.Entry<Genotype, Long> mostPopularGenotypeAndFrequency = getMostPopularGenotypeAndFrequency();
 
 
         return new StatisticsPack(this.day,

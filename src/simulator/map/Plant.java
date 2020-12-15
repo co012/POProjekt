@@ -1,7 +1,8 @@
-package simulator;
+package simulator.map;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import simulator.Vector2d;
 
 public class Plant implements IDrawableWorldMapElement {
     private final int nutritionalValue;
@@ -18,7 +19,7 @@ public class Plant implements IDrawableWorldMapElement {
         graphicsContext.setFill(Color.web(PLANT_COLOR));
         double x = position.x * xScale;
         double y = position.y * yScale;
-        graphicsContext.fillRect(x,y,xScale,yScale);
+        graphicsContext.fillRect(x, y, xScale, yScale);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class Plant implements IDrawableWorldMapElement {
         return position;
     }
 
-    public int getNutritionalValue(){
+    public int getNutritionalValue() {
         return nutritionalValue;
     }
 }

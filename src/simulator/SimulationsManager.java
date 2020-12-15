@@ -4,6 +4,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.*;
+import simulator.custom_controls.CanvasPane;
+import simulator.right_sidebar.InteractiveSidebarController;
+import simulator.statistics.StatisticSidebarController;
 
 
 import java.io.IOException;
@@ -16,7 +19,6 @@ public class SimulationsManager {
     private final SimulationProperties simulationProperties;
     private final LinkedList<Simulation> simulations;
     private ScheduledExecutorService scheduler;
-
 
 
     public SimulationsManager(SimulationProperties simulationProperties) {
@@ -35,7 +37,7 @@ public class SimulationsManager {
 
         FXMLLoader followAnimalLoader = new FXMLLoader(Thread.currentThread().getContextClassLoader().getResource("fxml/follow_animal_sidebar.fxml"));
         Node followAnimalSidebarNode = followAnimalLoader.load();
-        FollowAnimalController followAnimalController = followAnimalLoader.getController();
+        InteractiveSidebarController interactiveSidebarController = followAnimalLoader.getController();
         pane.setRight(followAnimalSidebarNode);
 
 
@@ -44,18 +46,17 @@ public class SimulationsManager {
         pane.setCenter(canvasPane);
 
 
-
-        Simulation simulation = new Simulation(simulationProperties,mapCanvas,statisticSidebarController,followAnimalController);
+        Simulation simulation = new Simulation(simulationProperties, mapCanvas, statisticSidebarController, interactiveSidebarController);
         simulations.add(simulation);
         return pane;
     }
 
-    public void startSimulations(){
+    public void startSimulations() {
         scheduler = Executors.newScheduledThreadPool(simulations.size());
-        simulations.forEach(simulation -> scheduler.scheduleWithFixedDelay(simulation,10,50, TimeUnit.MILLISECONDS));
+        simulations.forEach(simulation -> scheduler.scheduleWithFixedDelay(simulation, 10, 50, TimeUnit.MILLISECONDS));
     }
 
-    public void stopSimulations(){
+    public void stopSimulations() {
         scheduler.shutdown();
 
     }

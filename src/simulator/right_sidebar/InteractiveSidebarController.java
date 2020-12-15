@@ -1,4 +1,4 @@
-package simulator;
+package simulator.right_sidebar;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -8,12 +8,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import simulator.custom_controls.NumberField;
+import simulator.map.Animal;
+import simulator.map.Genotype;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
-public class FollowAnimalController {
+public class InteractiveSidebarController {
     @FXML private VBox followedAnimalInfoVBox;
     @FXML private VBox controlsVBox;
     @FXML private BarChart<String,Integer> currentViewedAnimalGenotypeBarChart;
@@ -39,12 +41,13 @@ public class FollowAnimalController {
 
 
 
-    public FollowAnimalController(){
+    public InteractiveSidebarController(){
         isPaused = false;
         iPauseEventHandler = null;
         viewedAnimals = new LinkedList<>();
         currentlyViewedAnimalIndex = 0;
         genotypeSeries = new XYChart.Series<>();
+        iSelectMostPopularEventHandler = () -> {};
         Platform.runLater(this::init);
     }
 
@@ -193,7 +196,6 @@ public class FollowAnimalController {
     @FXML
     private void onSelectMostPopular(){
         if(selectMostPopularButton.isDisabled())return;
-        if(iSelectMostPopularEventHandler == null)return;
         iSelectMostPopularEventHandler.selectMostPopular();
     }
 }
