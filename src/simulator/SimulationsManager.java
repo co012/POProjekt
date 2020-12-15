@@ -52,7 +52,7 @@ public class SimulationsManager {
 
     public void startSimulations(){
         scheduler = Executors.newScheduledThreadPool(simulations.size());
-        simulations.forEach(simulation -> scheduler.scheduleWithFixedDelay(simulation,10,10, TimeUnit.MILLISECONDS));
+        simulations.forEach(simulation -> scheduler.scheduleWithFixedDelay(simulation,10,50, TimeUnit.MILLISECONDS));
     }
 
     public void stopSimulations(){

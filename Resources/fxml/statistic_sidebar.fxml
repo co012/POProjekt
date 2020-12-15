@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import simulator.NumberField?>
 <VBox alignment="TOP_CENTER" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.StatisticSidebarController">
    <children>
       <LineChart fx:id="firstStatisticsLineChart">
@@ -32,6 +34,7 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
+      <Separator prefWidth="200.0" />
       <BarChart fx:id="mostPopularGenotypeBarChart" barGap="1.0" categoryGap="3.0" prefHeight="200.0" title="Most popular genotype">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
@@ -40,5 +43,21 @@
           <NumberAxis autoRanging="false" maxHeight="-Infinity" minHeight="-Infinity" minorTickCount="1" minorTickLength="1.0" prefHeight="100.0" side="LEFT" tickLabelGap="1.0" tickLength="5.0" tickUnit="4.0" upperBound="32.0" />
         </yAxis>
       </BarChart>
+      <Separator prefWidth="200.0" />
+       <HBox>
+           <VBox.margin>
+               <Insets/>
+           </VBox.margin>
+           <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+           </padding>
+
+           <NumberField fx:id="requestSaveDayInputField" promptText="Requested day" onAction="#onSaveRequest">
+               <tooltip><Tooltip text="Request a statistics save on given day" /></tooltip>
+           </NumberField>
+           <Button minWidth="70.0" mnemonicParsing="false" text="Request" onAction="#onSaveRequest">
+           <tooltip><Tooltip text="Request a statistics save on given day" /></tooltip>
+           </Button>
+       </HBox>
    </children>
 </VBox>

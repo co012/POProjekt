@@ -1,0 +1,13 @@
+{
+	"width": 200,
+	"height": 200,
+	"startEnergy": 200,
+	"moveEnergy": 1,
+	"plantEnergy": 100,
+	"jungleWidth": 100,
+	"jungleHeight": 130,
+	"startAnimalsNumber":300,
+	"plantsPerDayInsideJungle":70,
+	"plantsPerDayOutsideJungle":50,
+	"minEnergyForReproduction":150
+}

@@ -10,6 +10,8 @@ public class Genotype {
     private final int[] geneFrequencyArray;
     private final Random random = new Random();
 
+    public static final Genotype EMPTY = new Genotype(null);
+
     public Genotype(){
         genotypeArray = new int[GENOTYPE_LENGTH];
         for (int i = 0; i < GENOTYPE_LENGTH; i++) {
@@ -20,6 +22,11 @@ public class Genotype {
         geneFrequencyArray = getGenTypeFrequency();
 
 
+    }
+
+    private Genotype(Void empty){
+        genotypeArray = null;
+        geneFrequencyArray = new int[GENS_TYPES_NUMBER];
     }
 
     public Genotype(Genotype genotype1,Genotype genotype2){
@@ -96,5 +103,12 @@ public class Genotype {
 
     public int[] getGeneFrequencyArray(){
         return Arrays.copyOf(geneFrequencyArray,GENS_TYPES_NUMBER);
+    }
+
+    @Override
+    public String toString() {
+        return "Genotype{" +
+                "genotypeArray=" + Arrays.toString(genotypeArray) +
+                '}';
     }
 }

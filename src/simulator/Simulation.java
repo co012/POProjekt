@@ -8,20 +8,19 @@ import java.util.Optional;
 
 public class Simulation implements IPauseEventHandler,Runnable{
     private final SimulationProperties properties;
-    private final StatisticSidebarController sidebarController;
+    private final StatisticSidebarController statisticSidebarController;
     private final FollowAnimalController followAnimalController;
     private final Canvas mapCanvas;
     private final WorldMap map;
     private volatile boolean isPaused;
-    private int day;
 
-    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController sidebarController, FollowAnimalController followAnimalController) {
+
+    Simulation(SimulationProperties properties, Canvas mapCanvas, StatisticSidebarController statisticSidebarController, FollowAnimalController followAnimalController) {
         this.properties = properties;
-        this.sidebarController = sidebarController;
+        this.statisticSidebarController = statisticSidebarController;
         this.followAnimalController = followAnimalController;
         this.mapCanvas = mapCanvas;
         this.map = prepareMap();
-        day = 0;
 
         mapCanvas.setOnMouseClicked(e ->{
             if(!isPaused)return;
@@ -39,6 +38,7 @@ public class Simulation implements IPauseEventHandler,Runnable{
                 map.selectAnimalsWithMostPopularGenotype();
                 map.drawMap(mapCanvas);
         });
+
 
     }
 
@@ -71,7 +71,6 @@ public class Simulation implements IPauseEventHandler,Runnable{
 
     public void simulateADay() {
         synchronized (map){
-            day++;
             map.beginDay();
             map.removeDeadAnimals();
             map.moveAnimals();
@@ -94,16 +93,12 @@ public class Simulation implements IPauseEventHandler,Runnable{
     }
 
     public void updateStatistics(){
-        synchronized (map){
-            sidebarController.addNewAnimalNumberOnDayData(map.getAnimalsNumber(), day);
-            sidebarController.addNewPlantsNumberOnDayData(map.getPlantsNumber(), day);
-            sidebarController.addNewAvgEnergyOnDayData(map.getAvgEnergy(), day);
-            sidebarController.addNewBirthRateOnDayData(map.getAvgChildrenNumber(), day);
-            sidebarController.addNewLifeExpectancyOnDayData(map.getLifeExpectancy(), day);
-            Optional<Genotype> genotypeOptional = map.getMostPopularGenotype();
-            genotypeOptional.ifPresent(sidebarController::setMostPopularGenotype);
-            followAnimalController.updateFollowStatistics(day);
+        synchronized (map) {
+            StatisticsPack statisticsPack = map.getStatisticPack();
+            statisticSidebarController.addNewDataPack(statisticsPack);
+            followAnimalController.updateFollowStatistics(statisticsPack.day);
         }
+
 
 
     }
