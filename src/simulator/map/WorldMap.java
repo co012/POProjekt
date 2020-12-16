@@ -264,8 +264,8 @@ public class WorldMap {
                 .mapToDouble(Animal::getAge)
                 .sum();
 
-        deadAnimalsNumber += deadAnimalsList.size();
-        sumOfDeadAnimalsAge += ageSum;
+        deadAnimalsNumber = deadAnimalsList.size();
+        sumOfDeadAnimalsAge = ageSum;
 
         animalsList.removeAll(deadAnimalsList);
     }

@@ -147,6 +147,8 @@ public class InteractiveSidebarController {
     @FXML
     private void onFollowButtonClicked(){
         if(viewedAnimals.isEmpty() || controlsVBox.isDisabled())return;
+        if(followedAnimalStatisticsObserver != null) followedAnimalStatisticsObserver.onUnfollowAnimal();
+
         Animal followedAnimal = viewedAnimals.get(currentlyViewedAnimalIndex);
         followedAnimalStatisticsObserver = new FollowedAnimalStatisticsObserver(followedAnimal);
         followedAnimalInfoVBox.setDisable(false);

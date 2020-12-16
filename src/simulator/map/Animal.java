@@ -120,6 +120,11 @@ public class Animal implements IDrawableWorldMapElement {
         registerDescendantsObserver(followedAnimalStatisticsObserver);
     }
 
+    public void unregisterFollowAnimalObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver){
+        lifeObservers.removeIf(wr -> followedAnimalStatisticsObserver.equals(wr.get()));
+        color = ANIMAL_COLOR;
+    }
+
 
     private void registerDescendantsObserver(FollowedAnimalStatisticsObserver followedAnimalStatisticsObserver) {
         descendantsObservers.add(new WeakReference<>(followedAnimalStatisticsObserver));
@@ -144,8 +149,7 @@ public class Animal implements IDrawableWorldMapElement {
     }
 
     private void removeNullReferencesFromList(LinkedList<WeakReference<FollowedAnimalStatisticsObserver>> list) {
-        executeOnWeakReferenceList(list, (e) -> {
-        });
+        executeOnWeakReferenceList(list, (e) -> {});
     }
 
     public int getEnergy() {

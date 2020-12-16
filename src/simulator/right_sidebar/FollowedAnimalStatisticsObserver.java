@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class FollowedAnimalStatisticsObserver {
+    private final Animal followedAnimal;
     private final HashMap<Integer, Integer> numberOfChildrenToDay;
     private final HashMap<Integer, Integer> numberOfDescendantsToDay;
     private int numberOfChildren;
@@ -20,6 +21,7 @@ public class FollowedAnimalStatisticsObserver {
         numberOfDescendants = 0;
         followedAnimal.registerFollowAnimalObserver(this);
         isFollowedAnimalDead = false;
+        this.followedAnimal = followedAnimal;
 
     }
 
@@ -57,6 +59,9 @@ public class FollowedAnimalStatisticsObserver {
 
     public void onFollowedAnimalDead() {
         isFollowedAnimalDead = true;
+    }
+    public void onUnfollowAnimal(){
+        followedAnimal.unregisterFollowAnimalObserver(this);
     }
 
 }
