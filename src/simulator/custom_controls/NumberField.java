@@ -15,7 +15,6 @@ public final class NumberField extends TextField {
 
     public NumberField(String s) {
         super(s);
-        //TODO:leading zero fix
         UnaryOperator<TextFormatter.Change> changeUnaryOperator = (change) -> {
             if (!change.isContentChange()) return change;
             if (change.isDeleted()) return change;
